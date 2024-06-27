@@ -1,43 +1,24 @@
+import { installation, testing } from "../../data/readme-parts";
+import getControllers from "./nestjs-utils/getControllersAndMethods";
+import getPackageInfo from "./utils/getPackageInfo";
+import getTitleAndDescription from "./utils/getTitleAndDescription";
+
 const generateReadmeContent = () => {
+    const packageInfo = getPackageInfo();
+
+    const metaData = getTitleAndDescription(packageInfo);
+
     // Here you can add logic to generate the content based on the NestJS project
-    return `
-  # Project Title
+    return (
+        `# ${metaData?.title}
   
-  ## Description
-  A brief description of the project.
-  
-  ## Installation
-  \`\`\`bash
-  $ npm install
-  \`\`\`
-  
-  ## Running the app
-  \`\`\`bash
-  # development
-  $ npm run start
-  
-  # watch mode
-  $ npm run start:dev
-  
-  # production mode
-  $ npm run start:prod
-  \`\`\`
-  
-  ## Test
-  \`\`\`bash
-  # unit tests
-  $ npm run test
-  
-  # e2e tests
-  $ npm run test:e2e
-  
-  # test coverage
-  $ npm run test:cov
-  \`\`\`
-  
-  ## License
-  [MIT](LICENSE)
-    `;
+## Description
+${metaData?.description}
+
+${installation}
+${testing}
+`
+    )
 }
 
 export default generateReadmeContent;
