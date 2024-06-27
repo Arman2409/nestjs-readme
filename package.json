@@ -1,0 +1,20 @@
+{
+  "name": "nestjs-readme",
+  "version": "1.0.0",
+  "description": "NPM package for generating documentation for Nest.js projects",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup ./src/index.ts",
+    "build:watch": "tsup ./src/index.ts --watch"
+  },
+  "bin": {
+    "nestjs-readme": "./dist/index.js"
+  },
+  "keywords": ["Nest.js", "README", "documentation"],
+  "author": "Arman Ghazaryan",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "tsup": "^8.1.0"
+  }
+}
