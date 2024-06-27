@@ -1,0 +1,1 @@
+export const modulesPath = './src/modules';
