@@ -1,10 +1,5 @@
 export type Source = "query" | "param" | "body"
 
-export interface ModuleDetails {
-    name: string
-    controller: ControllerDetails
-}
-
 export interface ControllerDetails {
     path: string
     endpoints: EndpointDetails[]
@@ -19,3 +14,9 @@ export interface EndpointDetails {
         type: string
     }[]
 }[]
+
+export interface Script {
+    command: string 
+    tag?: string
+    isDefault?: boolean
+}

@@ -1,5 +1,6 @@
 import path from "path";
 import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter";
+import { defaultDescription } from "../../../configs/core";
 
 const getTitleAndDescription = (
     packageData: Object
@@ -8,15 +9,15 @@ const getTitleAndDescription = (
     description: string
 } => {
     let {
-        name = "Nest.js app",
+        name: title = "Nest.js app",
         description = "Nest.js server API"
     } = { ...packageData };
-    if (!name) {
-        name = path.basename(process.cwd());
+    if (!title) {
+        title = uppercaseFirstLetter(path.basename(process.cwd()));
     }
     return {
-        title: uppercaseFirstLetter(name),
-        description
+        title: title,
+        description: description || `${title} ${defaultDescription}`
     }
 }
 

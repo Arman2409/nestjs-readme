@@ -3,11 +3,11 @@ import { join } from 'path';
 
 import getControllerDetails from './helpers/getControllerDetails';
 import { modulesPath } from '../../../configs/core';
-import type { ModuleDetails } from '../../../types/core';
+import type { ControllerDetails } from '../../../types/core';
 
-const modules: ModuleDetails[] = [];
+const controllers: ControllerDetails[] = [];
 
-const extractModules = () => {
+const extractControllers = () => {
     const subdirectories = fs.readdirSync(
         modulesPath,
         { withFileTypes: true }
@@ -17,9 +17,9 @@ const extractModules = () => {
     for (const subdir of subdirectories) {
         const subdirPath = join(modulesPath, subdir.name);
 
-        getControllerDetails(subdirPath, subdir.name, modules);
+        getControllerDetails(subdirPath, controllers);
     }
-    return modules;
+    return controllers;
 }
 
-export default extractModules;
+export default extractControllers;

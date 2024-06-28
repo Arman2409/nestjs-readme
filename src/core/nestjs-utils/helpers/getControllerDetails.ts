@@ -3,12 +3,11 @@ import { join } from 'path';
 
 import truncateString from '../../../../helpers/truncateString';
 import extractEndpoints from './utils/extractEndpoints';
-import type { ModuleDetails } from '../../../../types/core';
+import type { ControllerDetails } from '../../../../types/core';
 
 const getControllerDetails = (
     currentDir: string,
-    moduleName: string,
-    modules: ModuleDetails[]
+    controllers: ControllerDetails[]
 ) => {
     const controllerFiles = fs.readdirSync(currentDir)
         .filter(file => file.endsWith('.controller.ts')); // Filter controller files
@@ -19,7 +18,7 @@ const getControllerDetails = (
             const moduleContent = fs.readFileSync(modulePath, 'utf8');
 
             const controllerDetails = extractEndpoints(moduleContent);
-            modules.push({ name: moduleName, controller: controllerDetails });
+            controllers.push(controllerDetails);
         });
     } catch(e) {
         console.error(truncateString(e?.message, 500));

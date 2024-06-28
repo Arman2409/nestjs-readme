@@ -2,7 +2,7 @@ import fs from "fs";
 
 import generateReadmeContent from "../../core/generateReadmeContent";
 
-const updateReadme = (
+const applyNewContent = (
     operation: "create" | "append",
     readmePath: string,
 ) => {
@@ -13,4 +13,4 @@ const updateReadme = (
     fs.appendFileSync(readmePath, '\n' + newContent);
 }
 
-export default updateReadme;
+export default applyNewContent;

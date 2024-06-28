@@ -1,23 +1,22 @@
-import { installation, testing } from "../../data/readme-parts";
-import extractModules from "./nestjs-utils/extractModules";
-import getPackageInfo from "./utils/getPackageInfo";
-import getTitleAndDescription from "./utils/getTitleAndDescription";
+import extractControllers from "./nestjs-utils/extractControllers";
+import getPackageInfo from "./extract-utils/getPackageInfo";
+import getTitleAndDescription from "./extract-utils/getTitleAndDescription";
+import listControllers from "./markdown-utils/listControllers";
+import getCommandsContent from "./markdown-utils/addCommands";
 
 const generateReadmeContent = () => {
     const packageInfo = getPackageInfo();
-
     const metaData = getTitleAndDescription(packageInfo);
-   
+    const controllersData = extractControllers();
 
-    // Here you can add logic to generate the content based on the NestJS project
     return (
-        `# ${metaData?.title}
+`# ${metaData?.title}
   
 ## Description
 ${metaData?.description}
 
-${installation}
-${testing}
+${listControllers(controllersData)}
+${getCommandsContent()}
 `
     )
 }

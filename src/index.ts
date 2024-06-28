@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import checkForReadme from "./commands/checkForReadme";
+import updateReadme from "./commands/updateReadme";
 
-checkForReadme();
+updateReadme();
 
 

@@ -34,7 +34,7 @@ const extractEndpoints = (content: string) => {
     }
 
     return {
-        path: controllerPath,
+        path: `/${controllerPath}`,
         endpoints
     };
 }
