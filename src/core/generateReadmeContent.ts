@@ -1,24 +1,26 @@
 import extractControllers from "./nestjs-utils/extractControllers";
 import getPackageInfo from "./extract-utils/getPackageInfo";
-import getTitleAndDescription from "./extract-utils/getTitleAndDescription";
+import addTitleAndDescription from "./markdown-utils/addTitleAndDescription";
 import listControllers from "./markdown-utils/listControllers";
-import getCommandsContent from "./markdown-utils/addCommands";
+import addCommands from "./markdown-utils/addCommands";
+import getEnvVariables from "./extract-utils/getEnvVariables";
+import addEnvVariables from "./markdown-utils/addEnvVariables";
 
 const generateReadmeContent = () => {
+    let readmeString = ""
+    
     const packageInfo = getPackageInfo();
-    const metaData = getTitleAndDescription(packageInfo);
+    readmeString += addTitleAndDescription(packageInfo);
+
     const controllersData = extractControllers();
+    readmeString += listControllers(controllersData);
 
-    return (
-`# ${metaData?.title}
-  
-## Description
-${metaData?.description}
+    const envVariables = getEnvVariables();
+    readmeString += addEnvVariables(envVariables);
 
-${listControllers(controllersData)}
-${getCommandsContent()}
-`
-    )
+    readmeString += addCommands();
+
+    return readmeString;
 }
 
 export default generateReadmeContent;

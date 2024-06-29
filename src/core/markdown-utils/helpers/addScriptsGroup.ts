@@ -10,17 +10,27 @@ const addScriptsGroup = (
     try {
         const packageJsonData = fs.readFileSync("./package.json", 'utf-8');
         const packageJson = JSON.parse(packageJsonData);
+        let foundScripts: Script[] = [];
+        for(const {tag, isDefault, command} of scripts) {
+            if (hasScript(packageJson, command) || isDefault) {
+                foundScripts.push({
+                    tag,
+                    command
+                });
+            }
+        }
+        if(foundScripts.length === 0) {
+            return "";
+        }
         let groupContent = `
 ## ${groupName}
 
 \`\`\`bash`;
-        scripts.forEach(({tag, command, isDefault}: Script) => {
-            if (hasScript(packageJson, command) || isDefault) {
+        foundScripts.forEach(({tag, command}: Script) => {
                 if (tag) {
                     groupContent += `\n # ${tag}`;
                 }
                 groupContent += `\n npm run ${command}`;
-            }
         })
         groupContent += `\n\`\`\``
         return groupContent;

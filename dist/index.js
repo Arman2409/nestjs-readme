@@ -62,11 +62,11 @@ var extractEndpoints = (content) => {
   let match;
   while ((match = methodRegex.exec(content)) !== null) {
     const method = match[1];
-    const path3 = match[2];
+    const path4 = match[2];
     if (methodsDecorators.includes(method)) {
       const newEndpoint = {
         method,
-        path: path3,
+        path: path4,
         details: []
       };
       endpoints.push(newEndpoint);
@@ -76,7 +76,7 @@ var extractEndpoints = (content) => {
       const type = result[1];
       endpoints[endpoints.length - 1].details.push({
         source: method.toLowerCase(),
-        name: removeQuotes_default(path3),
+        name: removeQuotes_default(path4),
         type
       });
     }
@@ -143,7 +143,7 @@ var getPackageInfo = () => {
 };
 var getPackageInfo_default = getPackageInfo;
 
-// src/core/extract-utils/getTitleAndDescription.ts
+// src/core/markdown-utils/addTitleAndDescription.ts
 var import_path3 = __toESM(require("path"));
 
 // helpers/uppercaseFirstLetter.ts
@@ -156,21 +156,22 @@ var uppercaseFirstLetter = (str) => {
 };
 var uppercaseFirstLetter_default = uppercaseFirstLetter;
 
-// src/core/extract-utils/getTitleAndDescription.ts
-var getTitleAndDescription = (packageData) => {
+// src/core/markdown-utils/addTitleAndDescription.ts
+var addTitleAndDescription = (packageData) => {
   let {
     name: title = "Nest.js app",
     description = "Nest.js server API"
   } = { ...packageData };
   if (!title) {
-    title = uppercaseFirstLetter_default(import_path3.default.basename(process.cwd()));
+    title = import_path3.default.basename(process.cwd());
   }
-  return {
-    title,
-    description: description || `${title} ${defaultDescription}`
-  };
+  return `# ${uppercaseFirstLetter_default(title)}
+  
+## Description
+${description || `${title} ${defaultDescription}`}
+`;
 };
-var getTitleAndDescription_default = getTitleAndDescription;
+var addTitleAndDescription_default = addTitleAndDescription;
 
 // src/core/markdown-utils/helpers/getControllerText.ts
 var getControllerText = (details) => `
@@ -219,6 +220,20 @@ var runningScripts = [
     tag: "watch mode"
   }
 ];
+var testingScripts = [
+  {
+    command: "test",
+    tag: "unit tests"
+  },
+  {
+    command: "test:e2e",
+    tag: "e2e tests"
+  },
+  {
+    command: "test:cov",
+    tag: " test coverage"
+  }
+];
 
 // src/core/markdown-utils/helpers/addScriptsGroup.ts
 var import_fs4 = __toESM(require("fs"));
@@ -237,19 +252,29 @@ var addScriptsGroup = (groupName, scripts) => {
   try {
     const packageJsonData = import_fs4.default.readFileSync("./package.json", "utf-8");
     const packageJson = JSON.parse(packageJsonData);
+    let foundScripts = [];
+    for (const { tag, isDefault, command } of scripts) {
+      if (hasScript_default(packageJson, command) || isDefault) {
+        foundScripts.push({
+          tag,
+          command
+        });
+      }
+    }
+    if (foundScripts.length === 0) {
+      return "";
+    }
     let groupContent = `
 ## ${groupName}
 
 \`\`\`bash`;
-    scripts.forEach(({ tag, command, isDefault }) => {
-      if (hasScript_default(packageJson, command) || isDefault) {
-        if (tag) {
-          groupContent += `
- # ${tag}`;
-        }
+    foundScripts.forEach(({ tag, command }) => {
+      if (tag) {
         groupContent += `
- npm run ${command}`;
+ # ${tag}`;
       }
+      groupContent += `
+ npm run ${command}`;
     });
     groupContent += `
 \`\`\``;
@@ -261,31 +286,94 @@ var addScriptsGroup = (groupName, scripts) => {
 var addScriptsGroup_default = addScriptsGroup;
 
 // src/core/markdown-utils/addCommands.ts
-var installation = addScriptsGroup_default("Installation", installationScripts);
-var running = addScriptsGroup_default("Running", runningScripts);
-var testing = addScriptsGroup_default("Testing", runningScripts);
+var groupsData = [
+  {
+    name: "Installation",
+    scripts: installationScripts
+  },
+  {
+    name: "Running",
+    scripts: runningScripts
+  },
+  {
+    name: "Testing",
+    scripts: testingScripts
+  }
+];
+var scriptsGroups = [];
+groupsData.forEach(({ name, scripts }) => {
+  const groupText = addScriptsGroup_default(name, scripts);
+  if (groupText) {
+    scriptsGroups.push(groupText);
+  }
+});
 var getCommandsContent = () => {
   return `
-  ${installation}
-  ${running}
-  ${testing}
+  ${scriptsGroups.map((group) => group)}
 `;
 };
 var addCommands_default = getCommandsContent;
 
+// src/core/extract-utils/getEnvVariables.ts
+var fs5 = __toESM(require("fs"));
+var path2 = __toESM(require("path"));
+var getEnvVariables = (filePath) => {
+  const possibleFiles = [".env", ".env.production", ".env.development"];
+  let envPath = "";
+  if (filePath && fs5.existsSync(filePath)) {
+    envPath = filePath;
+  } else {
+    for (const file of possibleFiles) {
+      const resolvedPath = path2.resolve(process.cwd(), file);
+      if (fs5.existsSync(resolvedPath)) {
+        envPath = resolvedPath;
+        break;
+      }
+    }
+  }
+  if (!envPath) {
+    throw new Error(`No environment file found at paths: ${possibleFiles.join(", ")}`);
+  }
+  const envContent = fs5.readFileSync(envPath, "utf-8");
+  const envVariables = {};
+  envContent.split("\n").forEach((line) => {
+    const cleanedLine = line.split("#")[0].trim();
+    if (cleanedLine) {
+      const [key, ...value] = cleanedLine.split("=");
+      const joinedValue = value.join("=").trim();
+      const finalValue = joinedValue.replace(/^['"]|['"]$/g, "");
+      envVariables[key.trim()] = finalValue;
+    }
+  });
+  return envVariables;
+};
+var getEnvVariables_default = getEnvVariables;
+
+// src/core/markdown-utils/addEnvVariables.ts
+var addEnvVariables = (envVariables) => {
+  let variablesText = "";
+  for (const key in envVariables) {
+    const normalizedName = uppercaseFirstLetter_default(key.replace(/_/g, " ").replace(/-/g, " ").toLowerCase());
+    variablesText += `
+- ${key}: Your ${normalizedName}`;
+  }
+  return `
+## Environment variables
+${variablesText}`;
+};
+var addEnvVariables_default = addEnvVariables;
+
 // src/core/generateReadmeContent.ts
 var generateReadmeContent = () => {
+  let readmeString = "";
   const packageInfo = getPackageInfo_default();
-  const metaData = getTitleAndDescription_default(packageInfo);
+  readmeString += addTitleAndDescription_default(packageInfo);
   const controllersData = extractControllers_default();
-  return `# ${metaData == null ? void 0 : metaData.title}
-  
-## Description
-${metaData == null ? void 0 : metaData.description}
-
-${listControllers_default(controllersData)}
-${addCommands_default()}
-`;
+  readmeString += listControllers_default(controllersData);
+  const envVariables = getEnvVariables_default();
+  readmeString += addEnvVariables_default(envVariables);
+  readmeString += addCommands_default();
+  return readmeString;
 };
 var generateReadmeContent_default = generateReadmeContent;
 
