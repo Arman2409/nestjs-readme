@@ -70,11 +70,11 @@
     }
   </style>
 </head>
-<body><h1>Nestjs-readme</h1>
+<body><h1 style="color: #4CAF50; text-align: center; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">Nestjs-readme</h1>
   
-<h3>NPM package for generating documentation for Nest.js projects</h3>
+<h3 style="color: #FF5722; text-align: center; padding-bottom: 5px;">NPM package for generating documentation for Nest.js projects</h3>
 
-<h4>Controllers</h4> 
+<h4 style="color: #03A9F4; text-align: center;">Controllers</h4> 
 
 ### Controller path: /extract
 
@@ -118,10 +118,16 @@ Entries:
     Source: query
 
 
-<h4>Environment variables</h4>
+<h4 style="color: #03A9F4; text-align: center;">Environment variables</h4>
 
 - DATABASE_URL: Your Database url
   
+<h4 style="color: #03A9F4; text-align: center;">Installation</h4>
+
+```bash
+ npm run install
+```
+</body></html>
 <h4>Installation</h4>
 
 ```bash
