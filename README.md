@@ -14,15 +14,15 @@
   
     - Name: url
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
     - Name: clearCache
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
     - Name: isDemo
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
 
 ### Controller path: /extract
@@ -35,15 +35,15 @@
   
     - Name: url
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
     - Name: clearCache
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
     - Name: isDemo
     - Type: string
-    - Source: query
+    - Source: query <br/>
 
 
 <h3 style="color: #03A9F4; text-align: center;  border-bottom: 1px solid #4CAF50;">🌐 Environment variables</h3>
