@@ -1,15 +1,32 @@
-import { installationScripts, runningScripts } from "../../../data/scripts";
+import { installationScripts, runningScripts, testingScripts } from "../../../data/scripts";
 import addScriptsGroup from "./helpers/addScriptsGroup";
 
-const installation = addScriptsGroup('Installation', installationScripts);
-const running = addScriptsGroup('Running', runningScripts);
-const testing = addScriptsGroup('Testing', runningScripts);
+const groupsData = [
+  {
+    name: "Installation",
+    scripts: installationScripts
+  },
+  {
+    name: "Running",
+    scripts: runningScripts
+  },
+  {
+    name: "Testing",
+    scripts: testingScripts
+  }
+]
+
+const scriptsGroups: string[] = []
+groupsData.forEach(({name, scripts}) => {
+   const groupText = addScriptsGroup(name, scripts);
+   if(groupText) {
+    scriptsGroups.push(groupText);
+   }
+})
 
 const getCommandsContent = () => {
     return `
-  ${installation}
-  ${running}
-  ${testing}
+  ${scriptsGroups.map(group => group)}
 `
 }
 
