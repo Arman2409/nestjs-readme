@@ -6,7 +6,7 @@ import addCommands from "./markdown-utils/addCommands";
 import getEnvVariables from "./extract-utils/getEnvVariables";
 import addEnvVariables from "./markdown-utils/addEnvVariables";
 
-const generateReadmeContent = () => {
+const generateReadmeContent = (args?: string[]) => {
     let readmeString = ""
     
     const packageInfo = getPackageInfo();
