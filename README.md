@@ -4,30 +4,9 @@
 
 <h3 style="color: #03A9F4; text-align: center;  border-bottom: 1px solid #4CAF50;">Controllers</h3> 
 
-### Controller path: /extract
+<h4>🧭 Controller: /extract </h4>
 
-####📌 Endpoints:
-
-- Path: "/"
-- Method: Get
-- Entries: 
-  
-    - Name: url
-    - Type: string
-    - Source: query <br/>
-
-    - Name: clearCache
-    - Type: string
-    - Source: query <br/>
-
-    - Name: isDemo
-    - Type: string
-    - Source: query <br/>
-
-
-### Controller path: /extract
-
-####📌 Endpoints:
+#### 📌 Endpoints:
 
 - Path: "/"
 - Method: Get
@@ -35,15 +14,42 @@
   
     - Name: url
     - Type: string
-    - Source: query <br/>
+    - Source: query 
+    
 
     - Name: clearCache
     - Type: string
-    - Source: query <br/>
+    - Source: query 
+    
 
     - Name: isDemo
     - Type: string
-    - Source: query <br/>
+    - Source: query 
+    
+
+
+<h4>🧭 Controller: /extract </h4>
+
+#### 📌 Endpoints:
+
+- Path: "/"
+- Method: Get
+- Entries: 
+  
+    - Name: url
+    - Type: string
+    - Source: query 
+    
+
+    - Name: clearCache
+    - Type: string
+    - Source: query 
+    
+
+    - Name: isDemo
+    - Type: string
+    - Source: query 
+    
 
 
 <h3 style="color: #03A9F4; text-align: center;  border-bottom: 1px solid #4CAF50;">🌐 Environment variables</h3>
