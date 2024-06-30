@@ -186,12 +186,17 @@ var defaultDescription = "Nest.js API server";
 
 // src/core/nestjs-utils/extractControllers.ts
 var controllers = [];
-var extractControllers = () => {
-  const subdirectories = import_fs2.default.readdirSync(
-    modulesDefaultPath,
-    { withFileTypes: true }
-  ).filter((dirent) => dirent.isDirectory());
-  for (const subdir of subdirectories) {
+var extractControllers = (modulesPath = modulesDefaultPath) => {
+  let subDirectories = [];
+  try {
+    subDirectories = import_fs2.default.readdirSync(
+      modulesPath,
+      { withFileTypes: true }
+    ).filter((dirent) => dirent.isDirectory());
+  } catch (e) {
+    throw new Error(`Can't scan path ${modulesPath}`);
+  }
+  for (const subdir of subDirectories) {
     const subdirPath = (0, import_path2.join)(modulesDefaultPath, subdir.name);
     getControllerDetails_default(subdirPath, controllers);
   }
@@ -272,10 +277,13 @@ ${details.endpoints.map((endpoint) => {
 var getControllerText_default = getControllerText;
 
 // src/core/markdown-utils/listControllers.ts
-var listControllers = (modulesData) => {
+var listControllers = (controllersData) => {
+  if (!controllersData || !controllersData.length) {
+    return "";
+  }
   let controllersText = `<h3 style="${text_default.title3}">Controllers</h3> 
 `;
-  modulesData.forEach((module2) => {
+  controllersData.forEach((module2) => {
     controllersText += getControllerText_default(module2);
   });
   return controllersText;
