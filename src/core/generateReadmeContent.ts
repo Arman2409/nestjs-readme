@@ -5,8 +5,9 @@ import listControllers from "./markdown-utils/listControllers";
 import addCommands from "./markdown-utils/addCommands";
 import getEnvVariables from "./extract-utils/getEnvVariables";
 import addEnvVariables from "./markdown-utils/addEnvVariables";
+import type { GenerateArgs } from "../../types/commands";
 
-const generateReadmeContent = (args?: string[]) => {
+const generateReadmeContent = (args?: GenerateArgs) => {
     let readmeString = ""
     
     const packageInfo = getPackageInfo();

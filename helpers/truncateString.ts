@@ -1,7 +1,8 @@
 const truncateString = (
     str?: string,
     length: number = 10,
-    dots: boolean = true): string => {
+    dots: boolean = true
+): string => {
     if (!str) return "";
     str = str.trim();
     // return the string itself if it doesn't exceed the given size

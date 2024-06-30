@@ -7,7 +7,7 @@ Commands:
     --help            Get help
 
 Options: 
- !under maintainence!
+ !under maintenence!
 `
-
-export const allowedGenerateArgs = ["--no-commands"]
+export const existsCommands = ["--replace", "--create", "--append"]
+export const allowedBoolArgs = ["--no-commands", "--no-controllers", "--no-env"]

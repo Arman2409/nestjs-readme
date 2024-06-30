@@ -32,28 +32,45 @@ Commands:
     --help            Get help
 
 Options: 
- !under maintainence!
+ !under maintenence!
 `;
-var allowedGenerateArgs = ["--no-commands"];
+var existsCommands = ["--replace", "--create", "--append"];
+var allowedBoolArgs = ["--no-commands", "--no-controllers", "--no-env"];
 
-// src/commands/utils/removeDuplicates.ts
-var removeDuplicates = (arr) => arr.filter(
-  (item, index) => arr.indexOf(item) === index
-);
-var removeDuplicates_default = removeDuplicates;
+// helpers/argToCamel.ts
+var argToCamel = (str) => {
+  const camelCase = str.toLowerCase().replace(/-([a-z])/g, (match, letter) => letter.toUpperCase()).slice(1);
+  return camelCase.slice(0, 1).toLowerCase() + camelCase.slice(1);
+};
+var argToCamel_default = argToCamel;
 
 // src/commands/getGenerateArgs.ts
 var getGenerateArgs = (args) => {
   const genArgs = args.slice(3);
+  const result = {};
   if (!genArgs) {
     return void 0;
   }
-  genArgs.forEach((arg) => {
-    if (!allowedGenerateArgs.includes(arg.toLowerCase())) {
+  genArgs.forEach((arg, index) => {
+    var _a;
+    const lowerArg = arg.toLowerCase();
+    if (allowedBoolArgs.includes(arg)) {
+      result[argToCamel_default(lowerArg)] = true;
+    } else if (lowerArg.startsWith("--modules-path")) {
+      const path5 = genArgs[index + 1];
+      if (!path5 || path5.startsWith("--")) {
+        throw new Error(`Missing or invalid value for '${arg}' argument.`);
+      }
+      result.modulesPath = path5;
+    } else if (existsCommands.includes(lowerArg)) {
+      result.existsCommand = lowerArg.slice(2);
+    } else if (existsCommands.map((command) => command.slice(0, 3)).includes(lowerArg)) {
+      result.existsCommand = (_a = existsCommands.find((command) => command.startsWith(lowerArg))) == null ? void 0 : _a.slice(2);
+    } else if (!(genArgs[index - 1] === "--modules-path")) {
       throw new Error(`Invalid Generate argument '${arg}'. Use --help for more info.`);
     }
   });
-  return removeDuplicates_default(genArgs);
+  return result;
 };
 var getGenerateArgs_default = getGenerateArgs;
 
@@ -164,18 +181,23 @@ var getControllerDetails = (currentDir, controllers2) => {
 var getControllerDetails_default = getControllerDetails;
 
 // configs/core.ts
-var modulesPath = "./src/modules";
+var modulesDefaultPath = "./src";
 var defaultDescription = "Nest.js API server";
 
 // src/core/nestjs-utils/extractControllers.ts
 var controllers = [];
-var extractControllers = () => {
-  const subdirectories = import_fs2.default.readdirSync(
-    modulesPath,
-    { withFileTypes: true }
-  ).filter((dirent) => dirent.isDirectory());
-  for (const subdir of subdirectories) {
-    const subdirPath = (0, import_path2.join)(modulesPath, subdir.name);
+var extractControllers = (modulesPath = modulesDefaultPath) => {
+  let subDirectories = [];
+  try {
+    subDirectories = import_fs2.default.readdirSync(
+      modulesPath,
+      { withFileTypes: true }
+    ).filter((dirent) => dirent.isDirectory());
+  } catch (e) {
+    throw new Error(`Can't scan path ${modulesPath}`);
+  }
+  for (const subdir of subDirectories) {
+    const subdirPath = (0, import_path2.join)(modulesDefaultPath, subdir.name);
     getControllerDetails_default(subdirPath, controllers);
   }
   return controllers;
@@ -255,10 +277,13 @@ ${details.endpoints.map((endpoint) => {
 var getControllerText_default = getControllerText;
 
 // src/core/markdown-utils/listControllers.ts
-var listControllers = (modulesData) => {
+var listControllers = (controllersData) => {
+  if (!controllersData || !controllersData.length) {
+    return "";
+  }
   let controllersText = `<h3 style="${text_default.title3}">Controllers</h3> 
 `;
-  modulesData.forEach((module2) => {
+  controllersData.forEach((module2) => {
     controllersText += getControllerText_default(module2);
   });
   return controllersText;
@@ -439,8 +464,18 @@ var generateReadmeContent = (args) => {
 };
 var generateReadmeContent_default = generateReadmeContent;
 
+// src/commands/utils/getNewReadmePath.ts
+var getNewReadmePath = (readmePath2) => {
+  const timestamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace("T", "_").split(".")[0];
+  return readmePath2.slice(0, -3) + `_${timestamp}.md`;
+};
+var getNewReadmePath_default = getNewReadmePath;
+
 // src/commands/utils/applyNewContent.ts
 var applyNewContent = (operation2, readmePath2, args) => {
+  if (operation2 === "create") {
+    readmePath2 = getNewReadmePath_default(readmePath2);
+  }
   const newContent = generateReadmeContent_default(args);
   if (operation2 === "create" || operation2 === "replace") {
     import_fs5.default.writeFileSync(readmePath2, newContent);
@@ -452,16 +487,18 @@ var applyNewContent = (operation2, readmePath2, args) => {
 };
 var applyNewContent_default = applyNewContent;
 
-// src/commands/utils/getNewReadmePath.ts
-var getNewReadmePath = (readmePath2) => {
-  const timestamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace("T", "_").split(".")[0];
-  return readmePath2.slice(0, -3) + `_${timestamp}.md`;
-};
-var getNewReadmePath_default = getNewReadmePath;
-
 // src/commands/updateReadme.ts
 var readmePath = import_path5.default.join(process.cwd(), "README.md");
-var checkForReadme = (args) => {
+var updateReadme = (args) => {
+  console.log({ args });
+  if (args == null ? void 0 : args.existsCommand) {
+    if ((args == null ? void 0 : args.existsCommand) === "append" || (args == null ? void 0 : args.existsCommand) === "replace") {
+      if (!import_fs6.default.existsSync(readmePath)) {
+        throw new Error(`Can not implement operation '${args == null ? void 0 : args.existsCommand}', README.md file doesn't exist.`);
+      }
+    }
+    return applyNewContent_default(args == null ? void 0 : args.existsCommand, readmePath, args);
+  }
   if (import_fs6.default.existsSync(readmePath)) {
     const rl = import_readline.default.createInterface({
       input: process.stdin,
@@ -479,7 +516,7 @@ var checkForReadme = (args) => {
             break;
           case "create":
           case "c":
-            applyNewContent_default("create", getNewReadmePath_default(readmePath), args);
+            applyNewContent_default("create", readmePath, args);
             rl.close();
             break;
           case "replace":
@@ -493,16 +530,16 @@ var checkForReadme = (args) => {
             break;
           default:
             console.error("\nInvalid operation name, please try again");
-            checkForReadme();
+            updateReadme();
             break;
         }
       }
     );
   } else {
-    applyNewContent_default("create", readmePath);
+    applyNewContent_default("create", readmePath, args);
   }
 };
-var updateReadme_default = checkForReadme;
+var updateReadme_default = updateReadme;
 
 // src/index.ts
 var operation = process.argv[2];
