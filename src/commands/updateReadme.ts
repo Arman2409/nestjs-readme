@@ -3,11 +3,23 @@ import path from "path";
 import readline from "readline";
 
 import applyNewContent from "./utils/applyNewContent";
-import getNewReadmePath from "./utils/getNewReadmePath";
+import type { GenerateArgs } from "../../types/commands";
 
 let readmePath = path.join(process.cwd(), 'README.md');
 
-const checkForReadme = (args?: string[]):void => {
+const updateReadme = (
+    args?: GenerateArgs
+): void => {
+    console.log({ args });
+
+    if (args?.existsCommand) {
+       if(args?.existsCommand === "append" || args?.existsCommand === "replace") {
+         if (!fs.existsSync(readmePath)) {
+            throw new Error(`Can not implement operation '${args?.existsCommand}', README.md file doesn't exist.`)
+         }
+       }
+       return applyNewContent(args?.existsCommand, readmePath, args);
+    }
     if (fs.existsSync(readmePath)) {
         const rl = readline.createInterface({
             input: process.stdin,
@@ -17,7 +29,6 @@ const checkForReadme = (args?: string[]):void => {
         rl.question('README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):',
             (answer) => {
                 const normalizedAnswer = answer.toLowerCase().trim(); // Normalize input
-
                 switch (normalizedAnswer) {
                     case 'append':
                     case 'a':
@@ -26,7 +37,7 @@ const checkForReadme = (args?: string[]):void => {
                         break;
                     case 'create':
                     case 'c':
-                        applyNewContent("create", getNewReadmePath(readmePath), args);
+                        applyNewContent("create", readmePath, args);
                         rl.close();
                         break;
                     case 'replace':
@@ -40,13 +51,13 @@ const checkForReadme = (args?: string[]):void => {
                         break;
                     default:
                         console.error("\nInvalid operation name, please try again");
-                        checkForReadme();
+                        updateReadme();
                         break;
                 }
             });
     } else {
-        applyNewContent("create", readmePath);
+        applyNewContent("create", readmePath, args);
     }
 }
 
-export default checkForReadme;
+export default updateReadme;

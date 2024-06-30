@@ -1,5 +1,7 @@
-const uppercaseFirstLetter = (str: string): string => {
-    if(!str) {
+const uppercaseFirstLetter = (
+    str: string
+): string => {
+    if (!str) {
         console.error("Non string value received");
         return "";
     }

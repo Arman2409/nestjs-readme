@@ -3,12 +3,17 @@ import path from "path";
 
 import generateReadmeContent from "../../core/generateReadmeContent";
 import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter";
+import getNewReadmePath from "./getNewReadmePath";
+import type { GenerateArgs } from "../../../types/commands";
 
 const applyNewContent = (
     operation: "create" | "append" | "replace",
     readmePath: string,
-    args?: string[]
+    args?: GenerateArgs
 ): void => {
+    if(operation === "create") {
+        readmePath = getNewReadmePath(readmePath);
+    }
     const newContent = generateReadmeContent(args);
     if (operation === "create" || operation === "replace") {
         fs.writeFileSync(readmePath, newContent);
