@@ -1,7 +1,7 @@
 <h1 style="text-align: center; border-bottom: 1px solid green"> Nestjs-readme
 </h1>
 
-`Gnerate basic README file for your Nest.js project`
+`Generate basic README.md file for your Nest.js project`
 
 - [Usage](#usage)
 - [Available Commands](#commands)
@@ -25,7 +25,7 @@
   Available Commands
 </h2>
 
-- generate/gen    Generates README for your project with default configuration
+- generate/gen    Generates README.md file for your project with default configuration
 - --help          You can get more info about package's usage with this command
 
 <h2 id="features" style="text-align: center">

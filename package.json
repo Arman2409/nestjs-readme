@@ -1,7 +1,7 @@
 {
   "name": "nestjs-readme",
-  "version": "1.0.0",
-  "description": "NPM package for generating documentation for Nest.js projects",
+  "version": "0.1.0",
+  "description": "Generate README files automatically for Nest.js projects",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup ./src/index.ts",
