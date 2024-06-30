@@ -22,13 +22,65 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
+// configs/commands.ts
+var helpText = `
+Usage:
+    nextjs-readme [options]
+
+Commands: 
+    generate/gen      Generate README file for your Nest.js project
+    --help            Get help
+
+Options: 
+ !under maintainence!
+`;
+var allowedGenerateArgs = ["--no-commands"];
+
+// src/commands/utils/removeDuplicates.ts
+var removeDuplicates = (arr) => arr.filter(
+  (item, index) => arr.indexOf(item) === index
+);
+var removeDuplicates_default = removeDuplicates;
+
+// src/commands/getGenerateArgs.ts
+var getGenerateArgs = (args) => {
+  const genArgs = args.slice(3);
+  if (!genArgs) {
+    return void 0;
+  }
+  genArgs.forEach((arg) => {
+    if (!allowedGenerateArgs.includes(arg.toLowerCase())) {
+      throw new Error(`Invalid Generate argument '${arg}'. Use --help for more info.`);
+    }
+  });
+  return removeDuplicates_default(genArgs);
+};
+var getGenerateArgs_default = getGenerateArgs;
+
+// src/commands/handleInstructions.ts
+var handleInstructions = (status) => {
+  switch (status) {
+    case "help":
+      console.log(helpText);
+      break;
+    case "notGiven":
+      throw new Error("Command not provided. Use --help for more info.");
+    case "invalid":
+      throw new Error("Invalid options. Use --help for more info.");
+    default:
+      throw new Error("Unknown status received.");
+  }
+};
+var handleInstructions_default = handleInstructions;
+
 // src/commands/updateReadme.ts
 var import_fs6 = __toESM(require("fs"));
-var import_path4 = __toESM(require("path"));
+var import_path5 = __toESM(require("path"));
 var import_readline = __toESM(require("readline"));
 
 // src/commands/utils/applyNewContent.ts
 var import_fs5 = __toESM(require("fs"));
+var import_path4 = __toESM(require("path"));
 
 // src/core/nestjs-utils/extractControllers.ts
 var import_fs2 = __toESM(require("fs"));
@@ -54,19 +106,19 @@ var removeQuotes = (str) => {
 var removeQuotes_default = removeQuotes;
 
 // src/core/nestjs-utils/helpers/utils/extractEndpoints.ts
+var methodRegex = /@(Get|Post|Put|Delete|Patch|Head|Query|Params|Body)\((.*?)\)/g;
+var methodsDecorators = ["Get", "Post", "Put", "Delete", "Patch", "Head"];
 var extractEndpoints = (content) => {
   const endpoints = [];
-  const methodRegex = /@(Get|Post|Put|Delete|Patch|Head|Query|Params|Body)\((.*?)\)/g;
-  const methodsDecorators = ["Get", "Post", "Put", "Delete", "Patch", "Head"];
   const controllerPath = getControllerPath(content);
   let match;
   while ((match = methodRegex.exec(content)) !== null) {
     const method = match[1];
-    const path4 = match[2];
+    const path5 = match[2];
     if (methodsDecorators.includes(method)) {
       const newEndpoint = {
         method,
-        path: path4,
+        path: path5,
         details: []
       };
       endpoints.push(newEndpoint);
@@ -76,7 +128,7 @@ var extractEndpoints = (content) => {
       const type = result[1];
       endpoints[endpoints.length - 1].details.push({
         source: method.toLowerCase(),
-        name: removeQuotes_default(path4),
+        name: removeQuotes_default(path5),
         type
       });
     }
@@ -88,8 +140,8 @@ var extractEndpoints = (content) => {
 };
 var extractEndpoints_default = extractEndpoints;
 function getControllerPath(content) {
-  const methodRegex = /@Controller\((.*?)\)/g;
-  const mathch = methodRegex.exec(content);
+  const methodRegex2 = /@Controller\((.*?)\)/g;
+  const mathch = methodRegex2.exec(content);
   const controllerName = mathch[1];
   const nameWithoutQuotes = removeQuotes_default(controllerName);
   return nameWithoutQuotes;
@@ -156,6 +208,14 @@ var uppercaseFirstLetter = (str) => {
 };
 var uppercaseFirstLetter_default = uppercaseFirstLetter;
 
+// styles/text.ts
+var titleStyles = {
+  title1: "color: #4CAF50; text-align: center; border-bottom: 3px solid #4CAF50; padding-bottom: 10px;",
+  title2: "color: #FF5722; text-align: center; padding-bottom: 5px;",
+  title3: "color: #03A9F4; text-align: center;  border-bottom: 1px solid #4CAF50;"
+};
+var text_default = titleStyles;
+
 // src/core/markdown-utils/addTitleAndDescription.ts
 var addTitleAndDescription = (packageData) => {
   let {
@@ -165,29 +225,30 @@ var addTitleAndDescription = (packageData) => {
   if (!title) {
     title = import_path3.default.basename(process.cwd());
   }
-  return `# ${uppercaseFirstLetter_default(title)}
+  return `<h1 style="${text_default.title1}">${uppercaseFirstLetter_default(title)}</h1>
   
-## Description
-${description || `${title} ${defaultDescription}`}
+<h2 style="${text_default.title2}">\u{1F4D6} ${description || `${title} ${defaultDescription}`}</h3>
+
 `;
 };
 var addTitleAndDescription_default = addTitleAndDescription;
 
 // src/core/markdown-utils/helpers/getControllerText.ts
 var getControllerText = (details) => `
-### Controller path: ${details.path}
+<h4>\u{1F9ED} Controller: ${details.path} </h4>
 
-#### Endpoints:
+#### \u{1F4CC} Endpoints:
 
 ${details.endpoints.map((endpoint) => {
   const detailLines = endpoint.details.map((detail) => `
-    Name: ${detail.name}
-    Type: ${detail.type}
-    Source: ${detail.source}
+    - **Name**: ${detail.name}
+      - **Type**: ${detail.type}
+      - **Source**: ${detail.source} 
+    
 `);
-  return `Path: ${endpoint.path}
-Method: ${endpoint.method}
-Entries: 
+  return `- **Path**: ${endpoint.path}
+- **Method**: ${endpoint.method}
+- **Entries**: 
   ${detailLines.join("")}`;
 })}
 `;
@@ -195,7 +256,8 @@ var getControllerText_default = getControllerText;
 
 // src/core/markdown-utils/listControllers.ts
 var listControllers = (modulesData) => {
-  let controllersText = "## Controllers \n";
+  let controllersText = `<h3 style="${text_default.title3}">Controllers</h3> 
+`;
   modulesData.forEach((module2) => {
     controllersText += getControllerText_default(module2);
   });
@@ -265,7 +327,7 @@ var addScriptsGroup = (groupName, scripts) => {
       return "";
     }
     let groupContent = `
-## ${groupName}
+<h3 style="${text_default.title3}">${groupName}</h3>
 
 \`\`\`bash`;
     foundScripts.forEach(({ tag, command }) => {
@@ -307,12 +369,12 @@ groupsData.forEach(({ name, scripts }) => {
     scriptsGroups.push(groupText);
   }
 });
-var getCommandsContent = () => {
+var addCommands = () => {
   return `
   ${scriptsGroups.map((group) => group)}
 `;
 };
-var addCommands_default = getCommandsContent;
+var addCommands_default = addCommands;
 
 // src/core/extract-utils/getEnvVariables.ts
 var fs5 = __toESM(require("fs"));
@@ -358,13 +420,13 @@ var addEnvVariables = (envVariables) => {
 - ${key}: Your ${normalizedName}`;
   }
   return `
-## Environment variables
+<h3 style="${text_default.title3}">\u{1F310} Environment variables</h3>
 ${variablesText}`;
 };
 var addEnvVariables_default = addEnvVariables;
 
 // src/core/generateReadmeContent.ts
-var generateReadmeContent = () => {
+var generateReadmeContent = (args) => {
   let readmeString = "";
   const packageInfo = getPackageInfo_default();
   readmeString += addTitleAndDescription_default(packageInfo);
@@ -378,36 +440,62 @@ var generateReadmeContent = () => {
 var generateReadmeContent_default = generateReadmeContent;
 
 // src/commands/utils/applyNewContent.ts
-var applyNewContent = (operation, readmePath2) => {
-  const newContent = generateReadmeContent_default();
-  if (operation === "create") {
-    return import_fs5.default.writeFileSync(readmePath2, newContent);
+var applyNewContent = (operation2, readmePath2, args) => {
+  const newContent = generateReadmeContent_default(args);
+  if (operation2 === "create" || operation2 === "replace") {
+    import_fs5.default.writeFileSync(readmePath2, newContent);
+  } else {
+    import_fs5.default.appendFileSync(readmePath2, "\n" + newContent);
   }
-  import_fs5.default.appendFileSync(readmePath2, "\n" + newContent);
+  const operationName = uppercaseFirstLetter_default(operation2 + (operation2.endsWith("e") ? "d" : "ed"));
+  console.log(`${operationName} ${import_path4.default.basename(readmePath2)}`);
 };
 var applyNewContent_default = applyNewContent;
 
+// src/commands/utils/getNewReadmePath.ts
+var getNewReadmePath = (readmePath2) => {
+  const timestamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace("T", "_").split(".")[0];
+  return readmePath2.slice(0, -3) + `_${timestamp}.md`;
+};
+var getNewReadmePath_default = getNewReadmePath;
+
 // src/commands/updateReadme.ts
-var readmePath = import_path4.default.join(process.cwd(), "README.md");
-var checkForReadme = () => {
+var readmePath = import_path5.default.join(process.cwd(), "README.md");
+var checkForReadme = (args) => {
   if (import_fs6.default.existsSync(readmePath)) {
     const rl = import_readline.default.createInterface({
       input: process.stdin,
       output: process.stdout
     });
     rl.question(
-      "README.md already exists. What would you like to do? (append/create/replace):",
+      "README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):",
       (answer) => {
-        if (answer.toLowerCase() === "append") {
-          applyNewContent_default("append", readmePath);
-        } else {
-          if (answer === "create") {
-            const timestamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace("T", "_").split(".")[0];
-            readmePath = readmePath.slice(0, -3) + `_${timestamp}.md`;
-          }
-          applyNewContent_default("create", readmePath);
+        const normalizedAnswer = answer.toLowerCase().trim();
+        switch (normalizedAnswer) {
+          case "append":
+          case "a":
+            applyNewContent_default("append", readmePath, args);
+            rl.close();
+            break;
+          case "create":
+          case "c":
+            applyNewContent_default("create", getNewReadmePath_default(readmePath), args);
+            rl.close();
+            break;
+          case "replace":
+          case "r":
+            applyNewContent_default("replace", readmePath, args);
+            rl.close();
+            break;
+          case "exit":
+          case "e":
+            rl.close();
+            break;
+          default:
+            console.error("\nInvalid operation name, please try again");
+            checkForReadme();
+            break;
         }
-        rl.close();
       }
     );
   } else {
@@ -417,4 +505,20 @@ var checkForReadme = () => {
 var updateReadme_default = checkForReadme;
 
 // src/index.ts
-updateReadme_default();
+var operation = process.argv[2];
+switch (operation) {
+  case "generate":
+  case "gen":
+    const updateArgs = getGenerateArgs_default(process.argv);
+    updateReadme_default(updateArgs);
+    break;
+  case "--help":
+    handleInstructions_default("help");
+    break;
+  case void 0:
+    handleInstructions_default("notGiven");
+    break;
+  default:
+    handleInstructions_default("invalid");
+    break;
+}

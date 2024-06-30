@@ -1,8 +1,9 @@
+import titleStyles from "../../../styles/text";
 import { ControllerDetails } from "../../../types/core";
 import getControllerText from "./helpers/getControllerText";
 
 const listControllers = (modulesData: ControllerDetails[]) => {
-    let controllersText = "## Controllers \n";
+    let controllersText = `<h3 style="${titleStyles.title3}">Controllers</h3> \n`;
     modulesData.forEach((module) => {
         controllersText += getControllerText(module);
     })

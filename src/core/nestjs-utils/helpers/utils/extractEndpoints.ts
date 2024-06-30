@@ -1,11 +1,11 @@
 import removeQuotes from "../../../../../helpers/removeQuotes";
 import type { EndpointDetails, Source } from "../../../../../types/core";
 
+const methodRegex = /@(Get|Post|Put|Delete|Patch|Head|Query|Params|Body)\((.*?)\)/g;
+const methodsDecorators = ["Get", "Post", "Put", "Delete", "Patch", "Head"];
+
 const extractEndpoints = (content: string) => {
     const endpoints: EndpointDetails[] = [];
-    const methodRegex = /@(Get|Post|Put|Delete|Patch|Head|Query|Params|Body)\((.*?)\)/g;
-    const methodsDecorators = ["Get", "Post", "Put", "Delete", "Patch", "Head"];
-
     const controllerPath = getControllerPath(content);
 
     let match: RegExpExecArray|null;

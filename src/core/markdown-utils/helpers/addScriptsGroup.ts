@@ -1,12 +1,12 @@
 import fs from "fs";
 
 import hasScript from "./utils/hasScript";
+import titleStyles from "../../../../styles/text";
 import type { Script } from "../../../../types/core";
 
 const addScriptsGroup = (
     groupName: string,
     scripts: Script[]) => {
-
     try {
         const packageJsonData = fs.readFileSync("./package.json", 'utf-8');
         const packageJson = JSON.parse(packageJsonData);
@@ -23,7 +23,7 @@ const addScriptsGroup = (
             return "";
         }
         let groupContent = `
-## ${groupName}
+<h3 style="${titleStyles.title3}">${groupName}</h3>
 
 \`\`\`bash`;
         foundScripts.forEach(({tag, command}: Script) => {

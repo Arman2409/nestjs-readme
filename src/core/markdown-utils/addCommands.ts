@@ -24,10 +24,10 @@ groupsData.forEach(({name, scripts}) => {
    }
 })
 
-const getCommandsContent = () => {
+const addCommands = () => {
     return `
   ${scriptsGroups.map(group => group)}
 `
 }
 
-export default getCommandsContent;
+export default addCommands;

@@ -1,4 +1,5 @@
 import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter"
+import titleStyles from "../../../styles/text";
 
 const addEnvVariables = (
     envVariables: Record<string, string>
@@ -9,7 +10,7 @@ const addEnvVariables = (
         variablesText += `\n- ${key}: Your ${normalizedName}`
     }
     return `
-## Environment variables
+<h3 style="${titleStyles.title3}">🌐 Environment variables</h3>
 ${variablesText}`
 }
 
