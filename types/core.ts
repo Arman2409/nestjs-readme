@@ -12,6 +12,7 @@ export interface EndpointDetails {
         source: Source
         name: string
         type: string
+        path: string
     }[]
 }[]
 

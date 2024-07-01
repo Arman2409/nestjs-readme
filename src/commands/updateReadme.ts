@@ -10,8 +10,6 @@ let readmePath = path.join(process.cwd(), 'README.md');
 const updateReadme = (
     args?: GenerateArgs
 ): void => {
-    console.log({ args });
-
     if (args?.existsCommand) {
        if(args?.existsCommand === "append" || args?.existsCommand === "replace") {
          if (!fs.existsSync(readmePath)) {
@@ -37,7 +35,7 @@ const updateReadme = (
                         break;
                     case 'create':
                     case 'c':
-                        applyNewContent("create", readmePath, args);
+                        applyNewContent("create", readmePath, args, true);
                         rl.close();
                         break;
                     case 'replace':

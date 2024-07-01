@@ -9,9 +9,10 @@ import type { GenerateArgs } from "../../../types/commands";
 const applyNewContent = (
     operation: "create" | "append" | "replace",
     readmePath: string,
-    args?: GenerateArgs
+    args?: GenerateArgs,
+    timestamp?: boolean
 ): void => {
-    if(operation === "create") {
+    if(operation === "create" && timestamp) {
         readmePath = getNewReadmePath(readmePath);
     }
     const newContent = generateReadmeContent(args);

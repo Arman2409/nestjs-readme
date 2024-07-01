@@ -15,7 +15,7 @@ const extractControllers = (modulesPath:string = modulesDefaultPath) => {
             modulesPath,
             { withFileTypes: true }
         )
-            .filter((dirent) => dirent.isDirectory());
+            .filter((dirent) => dirent.isDirectory());            
     } catch (e) {
         throw new Error(`Can't scan path ${modulesPath}`)
     }

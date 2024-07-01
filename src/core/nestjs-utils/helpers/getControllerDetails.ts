@@ -20,7 +20,7 @@ const getControllerDetails = (
             const controllerDetails = extractEndpoints(moduleContent);
             controllers.push(controllerDetails);
         });
-    } catch(e) {
+    } catch (e) {
         console.error(truncateString(e?.message, 500));
     }
 }

@@ -48,4 +48,4 @@ This package will look for basic commands used in Nest.js projects, like "start"
 The following files ".env", '.env.production' and '.env.development' will be scanned for environment variables and if there are any variables, they will be added as well.The environment variables are expected to be in this format VARIABLE_NAME="value".
 
 ### Controllers
-This is Nest.js specific feature.If your project has Nest.js-like structure and has "./src/modules/" folder, the package will look for controllers in each module and then list them readme with their endpoints with there parameters and paths.Note that GraphQL and other kind of APIs endpoints aren't supported yet.
+This is Nest.js specific feature.If your project has Nest.js-like structure and has "./src/" folder, the package will look for controllers in each module and then list them readme with their endpoints with there parameters and paths.Note that GraphQL and other kind of APIs endpoints aren't supported yet.

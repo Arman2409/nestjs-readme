@@ -140,14 +140,19 @@ var extractEndpoints = (content) => {
       };
       endpoints.push(newEndpoint);
     } else {
-      const regex = /@Query\(".*?"\)\s+\w+:\s+(\w+)/;
-      const result = content.slice(Number(match[3])).match(regex);
-      const type = result[1];
-      endpoints[endpoints.length - 1].details.push({
+      const regex = /@(Body|Query|Param)\s*\((.*?)\)\s+(\w+):?\s*([a-zA-Z<>]+)\s*[,)]/g;
+      const newMatch = content.slice(match.index).match(regex);
+      const regex2 = /@(Body|Query|Param)\((.*?)\)\s*(\w+):\s*(\w+)\s*,?/;
+      const match2 = newMatch[0].match(regex2);
+      const name = match2[2];
+      const type = match2[3];
+      const newEndpointDetails = {
         source: method.toLowerCase(),
-        name: removeQuotes_default(path5),
-        type
-      });
+        name,
+        type,
+        path: path5
+      };
+      endpoints[endpoints.length - 1].details.push(newEndpointDetails);
     }
   }
   return {
@@ -158,8 +163,8 @@ var extractEndpoints = (content) => {
 var extractEndpoints_default = extractEndpoints;
 function getControllerPath(content) {
   const methodRegex2 = /@Controller\((.*?)\)/g;
-  const mathch = methodRegex2.exec(content);
-  const controllerName = mathch[1];
+  const match = methodRegex2.exec(content);
+  const controllerName = match[1];
   const nameWithoutQuotes = removeQuotes_default(controllerName);
   return nameWithoutQuotes;
 }
@@ -270,7 +275,7 @@ ${details.endpoints.map((endpoint) => {
 `);
   return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
-- **Entries**: 
+- **Entries**:
   ${detailLines.join("")}`;
 })}
 `;
@@ -472,8 +477,8 @@ var getNewReadmePath = (readmePath2) => {
 var getNewReadmePath_default = getNewReadmePath;
 
 // src/commands/utils/applyNewContent.ts
-var applyNewContent = (operation2, readmePath2, args) => {
-  if (operation2 === "create") {
+var applyNewContent = (operation2, readmePath2, args, timestamp) => {
+  if (operation2 === "create" && timestamp) {
     readmePath2 = getNewReadmePath_default(readmePath2);
   }
   const newContent = generateReadmeContent_default(args);
@@ -490,7 +495,6 @@ var applyNewContent_default = applyNewContent;
 // src/commands/updateReadme.ts
 var readmePath = import_path5.default.join(process.cwd(), "README.md");
 var updateReadme = (args) => {
-  console.log({ args });
   if (args == null ? void 0 : args.existsCommand) {
     if ((args == null ? void 0 : args.existsCommand) === "append" || (args == null ? void 0 : args.existsCommand) === "replace") {
       if (!import_fs6.default.existsSync(readmePath)) {
@@ -516,7 +520,7 @@ var updateReadme = (args) => {
             break;
           case "create":
           case "c":
-            applyNewContent_default("create", readmePath, args);
+            applyNewContent_default("create", readmePath, args, true);
             rl.close();
             break;
           case "replace":

@@ -1,6 +1,6 @@
 {
   "name": "nestjs-readme",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate README files automatically for Nest.js projects",
   "main": "./dist/index.js",
   "scripts": {
@@ -9,6 +9,10 @@
   },
   "bin": {
     "nestjs-readme": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arman2409/nestjs-readme"
   },
   "keywords": ["Nest.js", "README", "documentation"],
   "author": "Arman Ghazaryan",

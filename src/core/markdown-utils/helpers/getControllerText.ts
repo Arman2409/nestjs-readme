@@ -15,7 +15,7 @@ ${details.endpoints.map(endpoint => {
 `);
         return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
-- **Entries**: 
+- **Entries**:
   ${detailLines.join('')}`
     })}
 `
