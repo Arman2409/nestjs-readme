@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
@@ -24,7 +25,7 @@ const updateReadme = (
             output: process.stdout
         });
 
-        rl.question('README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):',
+        rl.question(chalk.yellow('README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):'),
             (answer) => {
                 const normalizedAnswer = answer.toLowerCase().trim(); // Normalize input
                 switch (normalizedAnswer) {
@@ -48,7 +49,7 @@ const updateReadme = (
                         rl.close();
                         break;
                     default:
-                        console.error("\nInvalid operation name, please try again");
+                        console.error(chalk.red("\nInvalid operation name, please try again"));
                         updateReadme();
                         break;
                 }

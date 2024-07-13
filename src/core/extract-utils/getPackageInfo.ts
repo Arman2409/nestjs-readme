@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "fs";
 
 const getPackageInfo = () => {
@@ -6,7 +7,7 @@ const getPackageInfo = () => {
         const packageData = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
         return packageData;
     } catch (error) {
-        console.error("Error reading package.json:", error);
+        console.error(chalk.red("Error reading package.json:", error));
         return { title: "", description: "" };
     }
 };

@@ -10,8 +10,6 @@ const extractEndpoints = (content: string) => {
 
     let match: RegExpExecArray | null;
     while ((match = methodRegex.exec(content)) !== null) {
-        console.log(match);
-        
         const method = match[1]; // Extract method (GET, POST, etc.)
         const path = match[2]; // Extract path
         if (methodsDecorators.includes(method)) {

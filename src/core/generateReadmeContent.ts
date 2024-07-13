@@ -1,4 +1,4 @@
-import extractControllers from "./nestjs-utils/extractControllers";
+import extractControllers from "./nestjs-utils/extractController";
 import getPackageInfo from "./extract-utils/getPackageInfo";
 import addTitleAndDescription from "./markdown-utils/addTitleAndDescription";
 import listControllers from "./markdown-utils/listControllers";

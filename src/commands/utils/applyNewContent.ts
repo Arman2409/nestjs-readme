@@ -1,6 +1,8 @@
+import chalk from "chalk"
 import fs from "fs";
 import path from "path";
 
+import { cautionText } from "../../../configs/commands";
 import generateReadmeContent from "../../core/generateReadmeContent";
 import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter";
 import getNewReadmePath from "./getNewReadmePath";
@@ -22,7 +24,9 @@ const applyNewContent = (
         fs.appendFileSync(readmePath, '\n' + newContent);
     }
     const operationName = uppercaseFirstLetter(operation + (operation.endsWith("e") ? "d" : "ed"));
-    console.log(`${operationName} ${path.basename(readmePath)}`);
+    console.log(chalk.green(`${operationName} ${path.basename(readmePath)}`));
+    console.log(cautionText);
+    
 }
 
 export default applyNewContent;

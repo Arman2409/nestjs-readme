@@ -4,21 +4,28 @@
   "description": "Generate README files automatically for Nest.js projects",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsup ./src/index.ts",
-    "build:watch": "tsup ./src/index.ts --watch"
+    "build": "tsup ./src/index.ts  --format esm",
+    "build:watch": "tsup ./src/index.ts  --format esm --watch"
   },
   "bin": {
-    "nestjs-readme": "./dist/index.js"
+    "nestjs-readme": "./dist/index.mjs"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Arman2409/nestjs-readme"
   },
-  "keywords": ["Nest.js", "README", "documentation"],
+  "keywords": [
+    "Nest.js",
+    "README",
+    "documentation"
+  ],
   "author": "Arman Ghazaryan",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.14.9",
     "tsup": "^8.1.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
   }
 }
