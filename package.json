@@ -1,6 +1,6 @@
 {
   "name": "nestjs-readme",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate README files automatically for Nest.js projects",
   "main": "./dist/index.js",
   "scripts": {

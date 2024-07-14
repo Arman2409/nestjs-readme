@@ -11,12 +11,17 @@ ${chalk.bold("Commands:")}
     --help            Get help
 
 ${chalk.bold("Options:")} 
- !under maintenence!
+   ${chalk.yellow("!under maintenence!")}
 `
 );
 var cautionText = chalk.bold.magenta(
-  `Review your README after generation, don't forget that it was generated automatically`
+  `
+Review your README.md file after generation, don't forget that it was generated automatically and might not be precise`
 );
+var readmeExistingQuestion = chalk.yellow(
+  "README.md already exists. What would you like to do?\n(append(a)/create(c)/replace(r)/exit(e)):"
+);
+var envNotFoundMessage = chalk.yellow("Environment variables not detected.Continuing");
 var existsCommands = ["--replace", "--create", "--append"];
 var allowedBoolArgs = ["--no-commands", "--no-controllers", "--no-env"];
 
@@ -74,19 +79,15 @@ var handleInstructions = (status) => {
 var handleInstructions_default = handleInstructions;
 
 // src/commands/updateReadme.ts
-import chalk7 from "chalk";
-import fs7 from "fs";
+import chalk8 from "chalk";
+import fs6 from "fs";
 import path5 from "path";
 import readline from "readline";
 
 // src/commands/utils/applyNewContent.ts
-import chalk6 from "chalk";
-import fs6 from "fs";
+import chalk7 from "chalk";
+import fs5 from "fs";
 import path4 from "path";
-
-// src/core/nestjs-utils/extractController.ts
-import fs2 from "fs";
-import path from "path";
 
 // src/core/nestjs-utils/helpers/getControllerDetails.ts
 import chalk2 from "chalk";
@@ -106,29 +107,35 @@ var extractEndpoints = (content) => {
   const controllerPath = getControllerPath(content);
   let match;
   while ((match = methodRegex.exec(content)) !== null) {
-    const method = match[1];
-    const path6 = match[2];
-    if (methodsDecorators.includes(method)) {
-      const newEndpoint = {
-        method,
-        path: path6,
-        details: []
-      };
-      endpoints.push(newEndpoint);
-    } else {
-      const regex = /@(Body|Query|Param)\s*\((.*?)\)\s+(\w+):?\s*([a-zA-Z<>]+)\s*[,)]/g;
-      const regexForLine = /@(Body|Query|Param)\((.*?)\)\s*(\w+):\s*(\w+)\s*,?/;
-      const newMatch = content.slice(match.index).match(regex);
-      const sourceMath = newMatch[0].match(regexForLine);
-      const name = sourceMath[2];
-      const type = sourceMath[3];
-      const newEndpointDetails = {
-        source: method.toLowerCase(),
-        name,
-        type,
-        path: path6
-      };
-      endpoints[endpoints.length - 1].details.push(newEndpointDetails);
+    if (match) {
+      const method = match[1];
+      const path6 = match[2];
+      if (methodsDecorators.includes(method)) {
+        const newEndpoint = {
+          method,
+          path: path6,
+          details: []
+        };
+        endpoints.push(newEndpoint);
+      } else {
+        const regex = /@(Body|Query|Param)\s*\((.*?)\)\s+(\w+):?\s*([a-zA-Z<>]+)\s*[,)]/g;
+        const regexForLine = /@(Body|Query|Param)\((.*?)\)\s*(\w+):\s*(\w+)\s*,?/;
+        const newMatch = content.slice(match.index).match(regex);
+        if (newMatch) {
+          const sourceMatch = newMatch[0].match(regexForLine);
+          if (sourceMatch) {
+            const name = sourceMatch[2];
+            const type = sourceMatch[3];
+            const newEndpointDetails = {
+              source: method.toLowerCase(),
+              name,
+              type,
+              path: path6
+            };
+            endpoints[endpoints.length - 1].details.push(newEndpointDetails);
+          }
+        }
+      }
     }
   }
   return {
@@ -152,48 +159,66 @@ var getControllerDetails = (currentDir, controllers2) => {
     const controllerDetails = extractEndpoints_default(fileContent);
     controllers2.push(controllerDetails);
   } catch (e) {
-    console.error(chalk2.red("Error extracting endpoints from the controller:", e == null ? void 0 : e.message, 500));
+    console.error(chalk2.red("Failed to extract endpoints from the controller:", e == null ? void 0 : e.message, 500));
   }
 };
 var getControllerDetails_default = getControllerDetails;
 
 // configs/core.ts
-var modulesDefaultPath = "./nestjs-rest-api/src";
+var modulesDefaultPath = "./src/ghostfolio/src";
 var defaultDescription = "Nest.js API server";
 
-// src/core/nestjs-utils/extractController.ts
+// src/core/nestjs-utils/helpers/findFiles.ts
+import chalk3 from "chalk";
+import fs2 from "fs";
+import path from "path";
+var findFiles = (dir, ext = ".ts", fileList = []) => {
+  try {
+    const files = fs2.readdirSync(dir);
+    files.forEach((file) => {
+      const filePath = path.join(dir, file);
+      if (fs2.statSync(filePath).isDirectory()) {
+        findFiles(filePath, ext, fileList);
+      } else if (filePath.endsWith(ext)) {
+        fileList.push(filePath);
+      }
+    });
+    return fileList;
+  } catch (err) {
+    console.error(chalk3.red("Failed to extract files:", err));
+    return [];
+  }
+};
+var findFiles_default = findFiles;
+
+// src/core/nestjs-utils/extractControllers.ts
+import { existsSync } from "fs";
 var controllers = [];
-function findFiles(dir, ext = ".ts", fileList = []) {
-  const files = fs2.readdirSync(dir);
-  files.forEach((file) => {
-    const filePath = path.join(dir, file);
-    if (fs2.statSync(filePath).isDirectory()) {
-      findFiles(filePath, ext, fileList);
-    } else if (filePath.endsWith(ext)) {
-      fileList.push(filePath);
-    }
-  });
-  return fileList;
-}
 var extractControllers = (modulesPath = modulesDefaultPath) => {
-  const files = findFiles(modulesPath, ".controller.ts");
+  if (!existsSync(modulesPath)) {
+    console.warn(`Path ${modulesPath} doesn't exist.Scanning the main directory.`);
+    modulesPath = "./";
+  }
+  const files = findFiles_default(modulesPath, ".controller.ts");
   for (const file of files) {
     getControllerDetails_default(file, controllers);
   }
-  console.log({ controllers });
   return controllers;
 };
-var extractController_default = extractControllers;
+var extractControllers_default = extractControllers;
 
 // src/core/extract-utils/getPackageInfo.ts
-import chalk3 from "chalk";
+import chalk4 from "chalk";
 import fs3 from "fs";
 var getPackageInfo = () => {
   try {
-    const packageData = JSON.parse(fs3.readFileSync("./package.json", "utf8"));
+    const packageData = JSON.parse(fs3.readFileSync("./package.json", "utf8")) || {};
+    if (!packageData) {
+      console.warn(chalk4.yellow("File package.json not detected.Continuing"));
+    }
     return packageData;
   } catch (error) {
-    console.error(chalk3.red("Error reading package.json:", error));
+    console.error(chalk4.red("Error reading package.json:", error));
     return { title: "", description: "" };
   }
 };
@@ -203,10 +228,10 @@ var getPackageInfo_default = getPackageInfo;
 import path2 from "path";
 
 // helpers/uppercaseFirstLetter.ts
-import chalk4 from "chalk";
+import chalk5 from "chalk";
 var uppercaseFirstLetter = (str) => {
   if (!str) {
-    console.error(chalk4.red("Non string value received"));
+    console.error(chalk5.red("Non string value received"));
     return "";
   }
   return `${str[0].toUpperCase()}${str.slice(1)}`;
@@ -253,8 +278,9 @@ ${details.endpoints.map((endpoint) => {
 `);
   return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
-- **Entries**:
-  ${detailLines.join("")}`;
+${detailLines.length ? `- **Entries**:
+  ${detailLines.join("")}` : ""}
+`;
 })}
 `;
 var getControllerText_default = getControllerText;
@@ -306,8 +332,7 @@ var testingScripts = [
 ];
 
 // src/core/markdown-utils/helpers/addScriptsGroup.ts
-import chalk5 from "chalk";
-import fs4 from "fs";
+import chalk6 from "chalk";
 
 // src/core/markdown-utils/helpers/utils/hasScript.ts
 var hasScript = (packageJson, scriptName) => {
@@ -319,10 +344,8 @@ var hasScript = (packageJson, scriptName) => {
 var hasScript_default = hasScript;
 
 // src/core/markdown-utils/helpers/addScriptsGroup.ts
-var addScriptsGroup = (groupName, scripts) => {
+var addScriptsGroup = (groupName, scripts, packageJson) => {
   try {
-    const packageJsonData = fs4.readFileSync("./package.json", "utf-8");
-    const packageJson = JSON.parse(packageJsonData);
     let foundScripts = [];
     for (const { tag, isDefault, command } of scripts) {
       if (hasScript_default(packageJson, command) || isDefault) {
@@ -351,7 +374,7 @@ var addScriptsGroup = (groupName, scripts) => {
 \`\`\``;
     return groupContent;
   } catch (error) {
-    console.error(chalk5.red("Error reading package.json:", error));
+    console.error(chalk6.red("Error reading package.json:", error));
   }
 };
 var addScriptsGroup_default = addScriptsGroup;
@@ -371,14 +394,14 @@ var groupsData = [
     scripts: testingScripts
   }
 ];
-var scriptsGroups = [];
-groupsData.forEach(({ name, scripts }) => {
-  const groupText = addScriptsGroup_default(name, scripts);
-  if (groupText) {
-    scriptsGroups.push(groupText);
-  }
-});
-var addCommands = () => {
+var addCommands = (packageInfo) => {
+  const scriptsGroups = [];
+  groupsData.forEach(({ name, scripts }) => {
+    const groupText = addScriptsGroup_default(name, scripts, packageInfo);
+    if (groupText) {
+      scriptsGroups.push(groupText);
+    }
+  });
   return `
   ${scriptsGroups.map((group) => group)}
 `;
@@ -386,26 +409,27 @@ var addCommands = () => {
 var addCommands_default = addCommands;
 
 // src/core/extract-utils/getEnvVariables.ts
-import * as fs5 from "fs";
+import * as fs4 from "fs";
 import * as path3 from "path";
 var getEnvVariables = (filePath) => {
   const possibleFiles = [".env", ".env.production", ".env.development"];
   let envPath = "";
-  if (filePath && fs5.existsSync(filePath)) {
+  if (filePath && fs4.existsSync(filePath)) {
     envPath = filePath;
   } else {
     for (const file of possibleFiles) {
       const resolvedPath = path3.resolve(process.cwd(), file);
-      if (fs5.existsSync(resolvedPath)) {
+      if (fs4.existsSync(resolvedPath)) {
         envPath = resolvedPath;
         break;
       }
     }
   }
   if (!envPath) {
-    throw new Error(`No environment file found at paths: ${possibleFiles.join(", ")}`);
+    console.warn(envNotFoundMessage);
+    return;
   }
-  const envContent = fs5.readFileSync(envPath, "utf-8");
+  const envContent = fs4.readFileSync(envPath, "utf-8");
   const envVariables = {};
   envContent.split("\n").forEach((line) => {
     const cleanedLine = line.split("#")[0].trim();
@@ -416,12 +440,15 @@ var getEnvVariables = (filePath) => {
       envVariables[key.trim()] = finalValue;
     }
   });
+  if (Object.keys(envVariables).length === 0) {
+    console.warn(envNotFoundMessage);
+  }
   return envVariables;
 };
 var getEnvVariables_default = getEnvVariables;
 
 // src/core/markdown-utils/addEnvVariables.ts
-var addEnvVariables = (envVariables) => {
+var addEnvVariables = (envVariables = {}) => {
   let variablesText = "";
   for (const key in envVariables) {
     const normalizedName = uppercaseFirstLetter_default(key.replace(/_/g, " ").replace(/-/g, " ").toLowerCase());
@@ -438,12 +465,20 @@ var addEnvVariables_default = addEnvVariables;
 var generateReadmeContent = (args) => {
   let readmeString = "";
   const packageInfo = getPackageInfo_default();
-  readmeString += addTitleAndDescription_default(packageInfo);
-  const controllersData = extractController_default();
-  readmeString += listControllers_default(controllersData);
+  if (packageInfo) {
+    readmeString += addTitleAndDescription_default(packageInfo);
+  }
+  const controllersData = extractControllers_default();
+  if (controllersData) {
+    readmeString += listControllers_default(controllersData);
+  }
   const envVariables = getEnvVariables_default();
-  readmeString += addEnvVariables_default(envVariables);
-  readmeString += addCommands_default();
+  if (envVariables) {
+    readmeString += addEnvVariables_default(envVariables);
+  }
+  if (packageInfo) {
+    readmeString += addCommands_default(packageInfo);
+  }
   return readmeString;
 };
 var generateReadmeContent_default = generateReadmeContent;
@@ -462,12 +497,12 @@ var applyNewContent = (operation2, readmePath2, args, timestamp) => {
   }
   const newContent = generateReadmeContent_default(args);
   if (operation2 === "create" || operation2 === "replace") {
-    fs6.writeFileSync(readmePath2, newContent);
+    fs5.writeFileSync(readmePath2, newContent);
   } else {
-    fs6.appendFileSync(readmePath2, "\n" + newContent);
+    fs5.appendFileSync(readmePath2, "\n" + newContent);
   }
   const operationName = uppercaseFirstLetter_default(operation2 + (operation2.endsWith("e") ? "d" : "ed"));
-  console.log(chalk6.green(`${operationName} ${path4.basename(readmePath2)}`));
+  console.log(chalk7.green(`${operationName} ${path4.basename(readmePath2)}`));
   console.log(cautionText);
 };
 var applyNewContent_default = applyNewContent;
@@ -477,19 +512,19 @@ var readmePath = path5.join(process.cwd(), "README.md");
 var updateReadme = (args) => {
   if (args == null ? void 0 : args.existsCommand) {
     if ((args == null ? void 0 : args.existsCommand) === "append" || (args == null ? void 0 : args.existsCommand) === "replace") {
-      if (!fs7.existsSync(readmePath)) {
+      if (!fs6.existsSync(readmePath)) {
         throw new Error(`Can not implement operation '${args == null ? void 0 : args.existsCommand}', README.md file doesn't exist.`);
       }
     }
     return applyNewContent_default(args == null ? void 0 : args.existsCommand, readmePath, args);
   }
-  if (fs7.existsSync(readmePath)) {
+  if (fs6.existsSync(readmePath)) {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
     rl.question(
-      chalk7.yellow("README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):"),
+      readmeExistingQuestion,
       (answer) => {
         const normalizedAnswer = answer.toLowerCase().trim();
         switch (normalizedAnswer) {
@@ -513,7 +548,7 @@ var updateReadme = (args) => {
             rl.close();
             break;
           default:
-            console.error(chalk7.red("\nInvalid operation name, please try again"));
+            console.error(chalk8.red("\nInvalid operation name, please try again"));
             updateReadme();
             break;
         }

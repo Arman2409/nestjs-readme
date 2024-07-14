@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import fs from "fs";
 
 import hasScript from "./utils/hasScript";
 import titleStyles from "../../../../styles/text";
