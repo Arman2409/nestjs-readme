@@ -2,10 +2,16 @@
   "name": "nestjs-readme",
   "version": "0.1.2",
   "description": "Generate README files automatically for Nest.js projects",
-  "main": "./dist/index.js",
+  "main": "./dist/index.mjs",
   "scripts": {
-    "build": "tsup ./src/index.ts  --format esm",
-    "build:watch": "tsup ./src/index.ts  --format esm --watch"
+    "build": "tsup ./src/index.ts  --format esm, cjs",
+    "build:watch": "tsup ./src/index.ts  --format esm, cjs --watch"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
   },
   "bin": {
     "nestjs-readme": "./dist/index.mjs"
