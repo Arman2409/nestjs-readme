@@ -10,16 +10,28 @@ import type { GenerateArgs } from "../../types/commands";
 const generateReadmeContent = (args?: GenerateArgs) => {
     let readmeString = ""
     
+    // Add title and description 
     const packageInfo = getPackageInfo();
-    readmeString += addTitleAndDescription(packageInfo);
+    if(packageInfo){
+        readmeString += addTitleAndDescription(packageInfo);
+    }
 
+    // Add Endpoints from Controllers 
     const controllersData = extractControllers();
-    readmeString += listControllers(controllersData);
+    if(controllersData) {
+        readmeString += listControllers(controllersData);
+    }
 
+    // Add environment variables 
     const envVariables = getEnvVariables();
-    readmeString += addEnvVariables(envVariables);
+    if(envVariables) {
+        readmeString += addEnvVariables(envVariables);
+    }
 
-    readmeString += addCommands();
+    // Add Commands 
+    if(packageInfo){
+        readmeString += addCommands(packageInfo);
+    }
 
     return readmeString;
 }

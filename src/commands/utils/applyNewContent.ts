@@ -1,6 +1,8 @@
+import chalk from "chalk"
 import fs from "fs";
 import path from "path";
 
+import { cautionText } from "../../../configs/commands";
 import generateReadmeContent from "../../core/generateReadmeContent";
 import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter";
 import getNewReadmePath from "./getNewReadmePath";
@@ -9,9 +11,10 @@ import type { GenerateArgs } from "../../../types/commands";
 const applyNewContent = (
     operation: "create" | "append" | "replace",
     readmePath: string,
-    args?: GenerateArgs
+    args?: GenerateArgs,
+    timestamp?: boolean
 ): void => {
-    if(operation === "create") {
+    if(operation === "create" && timestamp) {
         readmePath = getNewReadmePath(readmePath);
     }
     const newContent = generateReadmeContent(args);
@@ -21,7 +24,8 @@ const applyNewContent = (
         fs.appendFileSync(readmePath, '\n' + newContent);
     }
     const operationName = uppercaseFirstLetter(operation + (operation.endsWith("e") ? "d" : "ed"));
-    console.log(`${operationName} ${path.basename(readmePath)}`);
+    console.log(chalk.green(`${operationName} ${path.basename(readmePath)}`));
+    console.log(cautionText);
 }
 
 export default applyNewContent;

@@ -1,7 +1,9 @@
+import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
 
+import { readmeExistingQuestion } from "../../configs/commands";
 import applyNewContent from "./utils/applyNewContent";
 import type { GenerateArgs } from "../../types/commands";
 
@@ -10,8 +12,6 @@ let readmePath = path.join(process.cwd(), 'README.md');
 const updateReadme = (
     args?: GenerateArgs
 ): void => {
-    console.log({ args });
-
     if (args?.existsCommand) {
        if(args?.existsCommand === "append" || args?.existsCommand === "replace") {
          if (!fs.existsSync(readmePath)) {
@@ -26,7 +26,7 @@ const updateReadme = (
             output: process.stdout
         });
 
-        rl.question('README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):',
+        rl.question(readmeExistingQuestion,
             (answer) => {
                 const normalizedAnswer = answer.toLowerCase().trim(); // Normalize input
                 switch (normalizedAnswer) {
@@ -37,7 +37,7 @@ const updateReadme = (
                         break;
                     case 'create':
                     case 'c':
-                        applyNewContent("create", readmePath, args);
+                        applyNewContent("create", readmePath, args, true);
                         rl.close();
                         break;
                     case 'replace':
@@ -50,7 +50,7 @@ const updateReadme = (
                         rl.close();
                         break;
                     default:
-                        console.error("\nInvalid operation name, please try again");
+                        console.error(chalk.red("\nInvalid operation name, please try again"));
                         updateReadme();
                         break;
                 }

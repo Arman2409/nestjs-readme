@@ -1,15 +1,16 @@
+import chalk from "chalk";
 import fs from "fs";
 
 import hasScript from "./utils/hasScript";
 import titleStyles from "../../../../styles/text";
 import type { Script } from "../../../../types/core";
 
+
 const addScriptsGroup = (
     groupName: string,
-    scripts: Script[]) => {
+    scripts: Script[],
+    packageJson: JSON) => {
     try {
-        const packageJsonData = fs.readFileSync("./package.json", 'utf-8');
-        const packageJson = JSON.parse(packageJsonData);
         let foundScripts: Script[] = [];
         for(const {tag, isDefault, command} of scripts) {
             if (hasScript(packageJson, command) || isDefault) {
@@ -35,7 +36,7 @@ const addScriptsGroup = (
         groupContent += `\n\`\`\``
         return groupContent;
     } catch (error) {
-        console.error('Error reading package.json:', error);
+        console.error(chalk.red('Error reading package.json:', error));
     }
 
 }

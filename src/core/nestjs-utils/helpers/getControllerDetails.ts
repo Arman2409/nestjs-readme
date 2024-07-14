@@ -1,7 +1,6 @@
-import fs from 'fs';
-import { join } from 'path';
+import chalk from "chalk";
+import fs from "fs";
 
-import truncateString from '../../../../helpers/truncateString';
 import extractEndpoints from './utils/extractEndpoints';
 import type { ControllerDetails } from '../../../../types/core';
 
@@ -9,19 +8,13 @@ const getControllerDetails = (
     currentDir: string,
     controllers: ControllerDetails[]
 ) => {
-    const controllerFiles = fs.readdirSync(currentDir)
-        .filter(file => file.endsWith('.controller.ts')); // Filter controller files
-
     try {
-        controllerFiles.forEach((controllerFile) => {
-            const modulePath = join(currentDir, controllerFile);
-            const moduleContent = fs.readFileSync(modulePath, 'utf8');
+        const fileContent = fs.readFileSync(currentDir, 'utf8');
 
-            const controllerDetails = extractEndpoints(moduleContent);
-            controllers.push(controllerDetails);
-        });
-    } catch(e) {
-        console.error(truncateString(e?.message, 500));
+        const controllerDetails = extractEndpoints(fileContent);
+        controllers.push(controllerDetails);
+    } catch (e) {
+        console.error(chalk.red("Failed to extract endpoints from the controller:", e?.message, 500));
     }
 }
 

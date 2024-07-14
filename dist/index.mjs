@@ -1,39 +1,22 @@
 #!/usr/bin/env node
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 
 // configs/commands.ts
-var helpText = `
-Usage:
+import chalk from "chalk";
+var helpText = chalk.cyan(
+  `${chalk.bold("Usage:")}
     nextjs-readme [options]
 
-Commands: 
+${chalk.bold("Commands:")}
     generate/gen      Generate README file for your Nest.js project
     --help            Get help
 
-Options: 
+${chalk.bold("Options:")} 
  !under maintenence!
-`;
+`
+);
+var cautionText = chalk.bold.magenta(
+  `Review your README after generation, don't forget that it was generated automatically`
+);
 var existsCommands = ["--replace", "--create", "--append"];
 var allowedBoolArgs = ["--no-commands", "--no-controllers", "--no-env"];
 
@@ -57,11 +40,11 @@ var getGenerateArgs = (args) => {
     if (allowedBoolArgs.includes(arg)) {
       result[argToCamel_default(lowerArg)] = true;
     } else if (lowerArg.startsWith("--modules-path")) {
-      const path5 = genArgs[index + 1];
-      if (!path5 || path5.startsWith("--")) {
+      const path6 = genArgs[index + 1];
+      if (!path6 || path6.startsWith("--")) {
         throw new Error(`Missing or invalid value for '${arg}' argument.`);
       }
-      result.modulesPath = path5;
+      result.modulesPath = path6;
     } else if (existsCommands.includes(lowerArg)) {
       result.existsCommand = lowerArg.slice(2);
     } else if (existsCommands.map((command) => command.slice(0, 3)).includes(lowerArg)) {
@@ -91,30 +74,23 @@ var handleInstructions = (status) => {
 var handleInstructions_default = handleInstructions;
 
 // src/commands/updateReadme.ts
-var import_fs6 = __toESM(require("fs"));
-var import_path5 = __toESM(require("path"));
-var import_readline = __toESM(require("readline"));
+import chalk7 from "chalk";
+import fs7 from "fs";
+import path5 from "path";
+import readline from "readline";
 
 // src/commands/utils/applyNewContent.ts
-var import_fs5 = __toESM(require("fs"));
-var import_path4 = __toESM(require("path"));
+import chalk6 from "chalk";
+import fs6 from "fs";
+import path4 from "path";
 
-// src/core/nestjs-utils/extractControllers.ts
-var import_fs2 = __toESM(require("fs"));
-var import_path2 = require("path");
+// src/core/nestjs-utils/extractController.ts
+import fs2 from "fs";
+import path from "path";
 
 // src/core/nestjs-utils/helpers/getControllerDetails.ts
-var import_fs = __toESM(require("fs"));
-var import_path = require("path");
-
-// helpers/truncateString.ts
-var truncateString = (str, length = 10, dots = true) => {
-  if (!str) return "";
-  str = str.trim();
-  if (str.length < length) return str;
-  return str.slice(0, length) + (dots ? "..." : "");
-};
-var truncateString_default = truncateString;
+import chalk2 from "chalk";
+import fs from "fs";
 
 // helpers/removeQuotes.ts
 var removeQuotes = (str) => {
@@ -131,23 +107,28 @@ var extractEndpoints = (content) => {
   let match;
   while ((match = methodRegex.exec(content)) !== null) {
     const method = match[1];
-    const path5 = match[2];
+    const path6 = match[2];
     if (methodsDecorators.includes(method)) {
       const newEndpoint = {
         method,
-        path: path5,
+        path: path6,
         details: []
       };
       endpoints.push(newEndpoint);
     } else {
-      const regex = /@Query\(".*?"\)\s+\w+:\s+(\w+)/;
-      const result = content.slice(Number(match[3])).match(regex);
-      const type = result[1];
-      endpoints[endpoints.length - 1].details.push({
+      const regex = /@(Body|Query|Param)\s*\((.*?)\)\s+(\w+):?\s*([a-zA-Z<>]+)\s*[,)]/g;
+      const regexForLine = /@(Body|Query|Param)\((.*?)\)\s*(\w+):\s*(\w+)\s*,?/;
+      const newMatch = content.slice(match.index).match(regex);
+      const sourceMath = newMatch[0].match(regexForLine);
+      const name = sourceMath[2];
+      const type = sourceMath[3];
+      const newEndpointDetails = {
         source: method.toLowerCase(),
-        name: removeQuotes_default(path5),
-        type
-      });
+        name,
+        type,
+        path: path6
+      };
+      endpoints[endpoints.length - 1].details.push(newEndpointDetails);
     }
   }
   return {
@@ -158,72 +139,74 @@ var extractEndpoints = (content) => {
 var extractEndpoints_default = extractEndpoints;
 function getControllerPath(content) {
   const methodRegex2 = /@Controller\((.*?)\)/g;
-  const mathch = methodRegex2.exec(content);
-  const controllerName = mathch[1];
+  const match = methodRegex2.exec(content);
+  const controllerName = match[1];
   const nameWithoutQuotes = removeQuotes_default(controllerName);
   return nameWithoutQuotes;
 }
 
 // src/core/nestjs-utils/helpers/getControllerDetails.ts
 var getControllerDetails = (currentDir, controllers2) => {
-  const controllerFiles = import_fs.default.readdirSync(currentDir).filter((file) => file.endsWith(".controller.ts"));
   try {
-    controllerFiles.forEach((controllerFile) => {
-      const modulePath = (0, import_path.join)(currentDir, controllerFile);
-      const moduleContent = import_fs.default.readFileSync(modulePath, "utf8");
-      const controllerDetails = extractEndpoints_default(moduleContent);
-      controllers2.push(controllerDetails);
-    });
+    const fileContent = fs.readFileSync(currentDir, "utf8");
+    const controllerDetails = extractEndpoints_default(fileContent);
+    controllers2.push(controllerDetails);
   } catch (e) {
-    console.error(truncateString_default(e == null ? void 0 : e.message, 500));
+    console.error(chalk2.red("Error extracting endpoints from the controller:", e == null ? void 0 : e.message, 500));
   }
 };
 var getControllerDetails_default = getControllerDetails;
 
 // configs/core.ts
-var modulesDefaultPath = "./src";
+var modulesDefaultPath = "./nestjs-rest-api/src";
 var defaultDescription = "Nest.js API server";
 
-// src/core/nestjs-utils/extractControllers.ts
+// src/core/nestjs-utils/extractController.ts
 var controllers = [];
+function findFiles(dir, ext = ".ts", fileList = []) {
+  const files = fs2.readdirSync(dir);
+  files.forEach((file) => {
+    const filePath = path.join(dir, file);
+    if (fs2.statSync(filePath).isDirectory()) {
+      findFiles(filePath, ext, fileList);
+    } else if (filePath.endsWith(ext)) {
+      fileList.push(filePath);
+    }
+  });
+  return fileList;
+}
 var extractControllers = (modulesPath = modulesDefaultPath) => {
-  let subDirectories = [];
-  try {
-    subDirectories = import_fs2.default.readdirSync(
-      modulesPath,
-      { withFileTypes: true }
-    ).filter((dirent) => dirent.isDirectory());
-  } catch (e) {
-    throw new Error(`Can't scan path ${modulesPath}`);
+  const files = findFiles(modulesPath, ".controller.ts");
+  for (const file of files) {
+    getControllerDetails_default(file, controllers);
   }
-  for (const subdir of subDirectories) {
-    const subdirPath = (0, import_path2.join)(modulesDefaultPath, subdir.name);
-    getControllerDetails_default(subdirPath, controllers);
-  }
+  console.log({ controllers });
   return controllers;
 };
-var extractControllers_default = extractControllers;
+var extractController_default = extractControllers;
 
 // src/core/extract-utils/getPackageInfo.ts
-var import_fs3 = __toESM(require("fs"));
+import chalk3 from "chalk";
+import fs3 from "fs";
 var getPackageInfo = () => {
   try {
-    const packageData = JSON.parse(import_fs3.default.readFileSync("./package.json", "utf8"));
+    const packageData = JSON.parse(fs3.readFileSync("./package.json", "utf8"));
     return packageData;
   } catch (error) {
-    console.error("Error reading package.json:", error);
+    console.error(chalk3.red("Error reading package.json:", error));
     return { title: "", description: "" };
   }
 };
 var getPackageInfo_default = getPackageInfo;
 
 // src/core/markdown-utils/addTitleAndDescription.ts
-var import_path3 = __toESM(require("path"));
+import path2 from "path";
 
 // helpers/uppercaseFirstLetter.ts
+import chalk4 from "chalk";
 var uppercaseFirstLetter = (str) => {
   if (!str) {
-    console.error("Non string value received");
+    console.error(chalk4.red("Non string value received"));
     return "";
   }
   return `${str[0].toUpperCase()}${str.slice(1)}`;
@@ -245,7 +228,7 @@ var addTitleAndDescription = (packageData) => {
     description = "Nest.js server API"
   } = { ...packageData };
   if (!title) {
-    title = import_path3.default.basename(process.cwd());
+    title = path2.basename(process.cwd());
   }
   return `<h1 style="${text_default.title1}">${uppercaseFirstLetter_default(title)}</h1>
   
@@ -270,7 +253,7 @@ ${details.endpoints.map((endpoint) => {
 `);
   return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
-- **Entries**: 
+- **Entries**:
   ${detailLines.join("")}`;
 })}
 `;
@@ -283,8 +266,8 @@ var listControllers = (controllersData) => {
   }
   let controllersText = `<h3 style="${text_default.title3}">Controllers</h3> 
 `;
-  controllersData.forEach((module2) => {
-    controllersText += getControllerText_default(module2);
+  controllersData.forEach((module) => {
+    controllersText += getControllerText_default(module);
   });
   return controllersText;
 };
@@ -323,7 +306,8 @@ var testingScripts = [
 ];
 
 // src/core/markdown-utils/helpers/addScriptsGroup.ts
-var import_fs4 = __toESM(require("fs"));
+import chalk5 from "chalk";
+import fs4 from "fs";
 
 // src/core/markdown-utils/helpers/utils/hasScript.ts
 var hasScript = (packageJson, scriptName) => {
@@ -337,7 +321,7 @@ var hasScript_default = hasScript;
 // src/core/markdown-utils/helpers/addScriptsGroup.ts
 var addScriptsGroup = (groupName, scripts) => {
   try {
-    const packageJsonData = import_fs4.default.readFileSync("./package.json", "utf-8");
+    const packageJsonData = fs4.readFileSync("./package.json", "utf-8");
     const packageJson = JSON.parse(packageJsonData);
     let foundScripts = [];
     for (const { tag, isDefault, command } of scripts) {
@@ -367,7 +351,7 @@ var addScriptsGroup = (groupName, scripts) => {
 \`\`\``;
     return groupContent;
   } catch (error) {
-    console.error("Error reading package.json:", error);
+    console.error(chalk5.red("Error reading package.json:", error));
   }
 };
 var addScriptsGroup_default = addScriptsGroup;
@@ -402,8 +386,8 @@ var addCommands = () => {
 var addCommands_default = addCommands;
 
 // src/core/extract-utils/getEnvVariables.ts
-var fs5 = __toESM(require("fs"));
-var path2 = __toESM(require("path"));
+import * as fs5 from "fs";
+import * as path3 from "path";
 var getEnvVariables = (filePath) => {
   const possibleFiles = [".env", ".env.production", ".env.development"];
   let envPath = "";
@@ -411,7 +395,7 @@ var getEnvVariables = (filePath) => {
     envPath = filePath;
   } else {
     for (const file of possibleFiles) {
-      const resolvedPath = path2.resolve(process.cwd(), file);
+      const resolvedPath = path3.resolve(process.cwd(), file);
       if (fs5.existsSync(resolvedPath)) {
         envPath = resolvedPath;
         break;
@@ -455,7 +439,7 @@ var generateReadmeContent = (args) => {
   let readmeString = "";
   const packageInfo = getPackageInfo_default();
   readmeString += addTitleAndDescription_default(packageInfo);
-  const controllersData = extractControllers_default();
+  const controllersData = extractController_default();
   readmeString += listControllers_default(controllersData);
   const envVariables = getEnvVariables_default();
   readmeString += addEnvVariables_default(envVariables);
@@ -472,40 +456,40 @@ var getNewReadmePath = (readmePath2) => {
 var getNewReadmePath_default = getNewReadmePath;
 
 // src/commands/utils/applyNewContent.ts
-var applyNewContent = (operation2, readmePath2, args) => {
-  if (operation2 === "create") {
+var applyNewContent = (operation2, readmePath2, args, timestamp) => {
+  if (operation2 === "create" && timestamp) {
     readmePath2 = getNewReadmePath_default(readmePath2);
   }
   const newContent = generateReadmeContent_default(args);
   if (operation2 === "create" || operation2 === "replace") {
-    import_fs5.default.writeFileSync(readmePath2, newContent);
+    fs6.writeFileSync(readmePath2, newContent);
   } else {
-    import_fs5.default.appendFileSync(readmePath2, "\n" + newContent);
+    fs6.appendFileSync(readmePath2, "\n" + newContent);
   }
   const operationName = uppercaseFirstLetter_default(operation2 + (operation2.endsWith("e") ? "d" : "ed"));
-  console.log(`${operationName} ${import_path4.default.basename(readmePath2)}`);
+  console.log(chalk6.green(`${operationName} ${path4.basename(readmePath2)}`));
+  console.log(cautionText);
 };
 var applyNewContent_default = applyNewContent;
 
 // src/commands/updateReadme.ts
-var readmePath = import_path5.default.join(process.cwd(), "README.md");
+var readmePath = path5.join(process.cwd(), "README.md");
 var updateReadme = (args) => {
-  console.log({ args });
   if (args == null ? void 0 : args.existsCommand) {
     if ((args == null ? void 0 : args.existsCommand) === "append" || (args == null ? void 0 : args.existsCommand) === "replace") {
-      if (!import_fs6.default.existsSync(readmePath)) {
+      if (!fs7.existsSync(readmePath)) {
         throw new Error(`Can not implement operation '${args == null ? void 0 : args.existsCommand}', README.md file doesn't exist.`);
       }
     }
     return applyNewContent_default(args == null ? void 0 : args.existsCommand, readmePath, args);
   }
-  if (import_fs6.default.existsSync(readmePath)) {
-    const rl = import_readline.default.createInterface({
+  if (fs7.existsSync(readmePath)) {
+    const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
     rl.question(
-      "README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):",
+      chalk7.yellow("README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):"),
       (answer) => {
         const normalizedAnswer = answer.toLowerCase().trim();
         switch (normalizedAnswer) {
@@ -516,7 +500,7 @@ var updateReadme = (args) => {
             break;
           case "create":
           case "c":
-            applyNewContent_default("create", readmePath, args);
+            applyNewContent_default("create", readmePath, args, true);
             rl.close();
             break;
           case "replace":
@@ -529,7 +513,7 @@ var updateReadme = (args) => {
             rl.close();
             break;
           default:
-            console.error("\nInvalid operation name, please try again");
+            console.error(chalk7.red("\nInvalid operation name, please try again"));
             updateReadme();
             break;
         }

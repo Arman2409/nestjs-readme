@@ -16,16 +16,19 @@ const groupsData = [
   }
 ]
 
-const scriptsGroups: string[] = []
-groupsData.forEach(({name, scripts}) => {
-   const groupText = addScriptsGroup(name, scripts);
-   if(groupText) {
-    scriptsGroups.push(groupText);
-   }
-})
+const addCommands = (
+  packageInfo: JSON
+) => {
 
-const addCommands = () => {
-    return `
+  const scriptsGroups: string[] = []
+  groupsData.forEach(({ name, scripts }) => {
+    const groupText = addScriptsGroup(name, scripts, packageInfo);
+    if (groupText) {
+      scriptsGroups.push(groupText);
+    }
+  })
+
+  return `
   ${scriptsGroups.map(group => group)}
 `
 }

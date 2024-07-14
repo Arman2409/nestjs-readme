@@ -15,9 +15,10 @@ ${details.endpoints.map(endpoint => {
 `);
         return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
-- **Entries**: 
-  ${detailLines.join('')}`
+${detailLines.length ? `- **Entries**:
+  ${detailLines.join('')}` : ""}
+`
     })}
 `
-
+ 
 export default getControllerText;
