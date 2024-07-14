@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 
+import { readmeExistingQuestion } from "../../configs/commands";
 import applyNewContent from "./utils/applyNewContent";
 import type { GenerateArgs } from "../../types/commands";
 
@@ -25,7 +26,7 @@ const updateReadme = (
             output: process.stdout
         });
 
-        rl.question(chalk.yellow('README.md already exists. What would you like to do? (append(a)/create(c)/replace(r)/exit(e)):'),
+        rl.question(readmeExistingQuestion,
             (answer) => {
                 const normalizedAnswer = answer.toLowerCase().trim(); // Normalize input
                 switch (normalizedAnswer) {

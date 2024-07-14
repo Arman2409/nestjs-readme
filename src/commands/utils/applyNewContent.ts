@@ -26,7 +26,6 @@ const applyNewContent = (
     const operationName = uppercaseFirstLetter(operation + (operation.endsWith("e") ? "d" : "ed"));
     console.log(chalk.green(`${operationName} ${path.basename(readmePath)}`));
     console.log(cautionText);
-    
 }
 
 export default applyNewContent;

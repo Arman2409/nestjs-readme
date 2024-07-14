@@ -8,10 +8,9 @@ import type { Script } from "../../../../types/core";
 
 const addScriptsGroup = (
     groupName: string,
-    scripts: Script[]) => {
+    scripts: Script[],
+    packageJson: JSON) => {
     try {
-        const packageJsonData = fs.readFileSync("./package.json", 'utf-8');
-        const packageJson = JSON.parse(packageJsonData);
         let foundScripts: Script[] = [];
         for(const {tag, isDefault, command} of scripts) {
             if (hasScript(packageJson, command) || isDefault) {

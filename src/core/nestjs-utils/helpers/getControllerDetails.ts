@@ -14,7 +14,7 @@ const getControllerDetails = (
         const controllerDetails = extractEndpoints(fileContent);
         controllers.push(controllerDetails);
     } catch (e) {
-        console.error(chalk.red("Error extracting endpoints from the controller:", e?.message, 500));
+        console.error(chalk.red("Failed to extract endpoints from the controller:", e?.message, 500));
     }
 }
 

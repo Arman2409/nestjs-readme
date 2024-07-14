@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { envNotFoundMessage } from '../../../configs/commands';
+
 const getEnvVariables = (
   filePath?: string
-): Record<string, string> => {
+): Record<string, string>|void => {
   const possibleFiles = [".env", '.env.production', '.env.development'];
-  let envPath = '';
+  let envPath = "";
   if (filePath && fs.existsSync(filePath)) {
     envPath = filePath;
   } else {
@@ -19,7 +21,8 @@ const getEnvVariables = (
   }
 
   if (!envPath) {
-    throw new Error(`No environment file found at paths: ${possibleFiles.join(', ')}`);
+    console.warn(envNotFoundMessage);
+    return;
   }
 
   const envContent = fs.readFileSync(envPath, 'utf-8');
@@ -40,6 +43,10 @@ const getEnvVariables = (
       envVariables[key.trim()] = finalValue;
     }
   });
+
+  if(Object.keys(envVariables).length === 0) {
+    console.warn(envNotFoundMessage)
+   }
 
   return envVariables;
 }

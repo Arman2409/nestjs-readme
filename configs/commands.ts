@@ -9,12 +9,17 @@ ${chalk.bold("Commands:")}
     --help            Get help
 
 ${chalk.bold("Options:")} 
- !under maintenence!
+   ${chalk.yellow("!under maintenence!")}
 `)
 
 export const cautionText = chalk.bold.magenta(
-`Review your README after generation, don't forget that it was generated automatically`
+`\nReview your README.md file after generation, don't forget that it was generated automatically and might not be precise`
 );
 
+export const readmeExistingQuestion = chalk.yellow(
+'README.md already exists. What would you like to do?\n(append(a)/create(c)/replace(r)/exit(e)):'
+);
+
+export const envNotFoundMessage = chalk.yellow("Environment variables not detected.Continuing");
 export const existsCommands = ["--replace", "--create", "--append"]
 export const allowedBoolArgs = ["--no-commands", "--no-controllers", "--no-env"]

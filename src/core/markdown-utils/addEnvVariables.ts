@@ -2,7 +2,7 @@ import uppercaseFirstLetter from "../../../helpers/uppercaseFirstLetter"
 import titleStyles from "../../../styles/text";
 
 const addEnvVariables = (
-    envVariables: Record<string, string>
+    envVariables: Record<string, string> = {}
 ) => {
     let variablesText = ""
     for (const key in envVariables) {
