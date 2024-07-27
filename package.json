@@ -1,6 +1,6 @@
 {
   "name": "nestjs-readme",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Generate README files automatically for Nest.js projects",
   "main": "./dist/index.mjs",
   "scripts": {
@@ -26,7 +26,7 @@
     "documentation"
   ],
   "author": "Arman Ghazaryan",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.14.9",
     "tsup": "^8.1.0"

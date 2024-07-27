@@ -16,7 +16,7 @@ ${chalk.bold("Options:")}
 );
 var cautionText = chalk.bold.magenta(
   `
-Review your README.md file after generation, don't forget that it was generated automatically and might not be precise`
+ \u2757 Review your README.md file after generation, don't forget that it was generated automatically and might not be precise \u2757`
 );
 var readmeExistingQuestion = chalk.yellow(
   "README.md already exists. What would you like to do?\n(append(a)/create(c)/replace(r)/exit(e)):"
@@ -165,19 +165,29 @@ var getControllerDetails = (currentDir, controllers2) => {
 var getControllerDetails_default = getControllerDetails;
 
 // configs/core.ts
-var modulesDefaultPath = "./src/ghostfolio/src";
+var modulesDefaultPath = "./src/";
 var defaultDescription = "Nest.js API server";
 
 // src/core/nestjs-utils/helpers/findFiles.ts
 import chalk3 from "chalk";
 import fs2 from "fs";
 import path from "path";
+var shouldIgnore = [".", "node_modules", ".git", ".vscode"];
 var findFiles = (dir, ext = ".ts", fileList = []) => {
   try {
     const files = fs2.readdirSync(dir);
     files.forEach((file) => {
       const filePath = path.join(dir, file);
       if (fs2.statSync(filePath).isDirectory()) {
+        let shouldBeIgnored = false;
+        shouldIgnore.forEach((path6) => {
+          if (filePath.startsWith(path6)) {
+            shouldBeIgnored = true;
+          }
+        });
+        if (shouldBeIgnored) {
+          return;
+        }
         findFiles(filePath, ext, fileList);
       } else if (filePath.endsWith(ext)) {
         fileList.push(filePath);

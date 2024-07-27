@@ -13,7 +13,7 @@ ${chalk.bold("Options:")}
 `)
 
 export const cautionText = chalk.bold.magenta(
-`\nReview your README.md file after generation, don't forget that it was generated automatically and might not be precise`
+`\n ❗ Review your README.md file after generation, don't forget that it was generated automatically and might not be precise ❗`
 );
 
 export const readmeExistingQuestion = chalk.yellow(
