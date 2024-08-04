@@ -2,7 +2,7 @@ import { allowedBoolArgs, existsCommands } from "../../configs/commands";
 import argToCamel from "../../helpers/argToCamel";
 import type { ExistsCommand, GenerateArgs } from "../../types/commands";
 
-const getGenerateArgs = (
+const getGenerationArgs = (
     args: string[]
 ): GenerateArgs | undefined => {
     const genArgs = args.slice(3);
@@ -36,4 +36,4 @@ const getGenerateArgs = (
     return result;
 }
 
-export default getGenerateArgs;
+export default getGenerationArgs;

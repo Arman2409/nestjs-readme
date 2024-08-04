@@ -32,8 +32,8 @@ var argToCamel = (str) => {
 };
 var argToCamel_default = argToCamel;
 
-// src/commands/getGenerateArgs.ts
-var getGenerateArgs = (args) => {
+// src/commands/getGenerationArgs.ts
+var getGenerationArgs = (args) => {
   const genArgs = args.slice(3);
   const result = {};
   if (!genArgs) {
@@ -60,7 +60,7 @@ var getGenerateArgs = (args) => {
   });
   return result;
 };
-var getGenerateArgs_default = getGenerateArgs;
+var getGenerationArgs_default = getGenerationArgs;
 
 // src/commands/handleInstructions.ts
 var handleInstructions = (status) => {
@@ -68,7 +68,7 @@ var handleInstructions = (status) => {
     case "help":
       console.log(helpText);
       break;
-    case "notGiven":
+    case "not-given":
       throw new Error("Command not provided. Use --help for more info.");
     case "invalid":
       throw new Error("Invalid options. Use --help for more info.");
@@ -129,8 +129,7 @@ var extractEndpoints = (content) => {
             const newEndpointDetails = {
               source: method.toLowerCase(),
               name,
-              type,
-              path: path6
+              type
             };
             endpoints[endpoints.length - 1].details.push(newEndpointDetails);
           }
@@ -281,10 +280,8 @@ var getControllerText = (details) => `
 
 ${details.endpoints.map((endpoint) => {
   const detailLines = endpoint.details.map((detail) => `
-    - **Name**: ${detail.name}
-      - **Type**: ${detail.type}
       - **Source**: ${detail.source} 
-    
+      - **Type**: ${detail.type}
 `);
   return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
@@ -575,14 +572,14 @@ var operation = process.argv[2];
 switch (operation) {
   case "generate":
   case "gen":
-    const updateArgs = getGenerateArgs_default(process.argv);
+    const updateArgs = getGenerationArgs_default(process.argv);
     updateReadme_default(updateArgs);
     break;
   case "--help":
     handleInstructions_default("help");
     break;
   case void 0:
-    handleInstructions_default("notGiven");
+    handleInstructions_default("not-given");
     break;
   default:
     handleInstructions_default("invalid");

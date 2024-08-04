@@ -10,11 +10,19 @@ export interface EndpointDetails {
     path: string
     details: {
         source: Source
-        name: string
         type: string
-        path: string
     }[]
 }[]
+
+export interface GraphQLEndpointDetails {
+    type: string
+    name: string
+    returnType:  string 
+    arguments: {
+        name: string
+        type: string
+    }[]
+}
 
 export interface Script {
     command: string 

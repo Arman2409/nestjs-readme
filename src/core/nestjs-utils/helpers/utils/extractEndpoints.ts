@@ -37,7 +37,6 @@ const extractEndpoints = (content: string) => {
                             source: method.toLowerCase() as Source,
                             name,
                             type,
-                            path: path
                         }
 
                         endpoints[endpoints.length - 1].details.push(newEndpointDetails)

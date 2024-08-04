@@ -8,10 +8,8 @@ const getControllerText = (details: ControllerDetails) =>
 
 ${details.endpoints.map(endpoint => {
         const detailLines = endpoint.details.map(detail => `
-    - **Name**: ${detail.name}
-      - **Type**: ${detail.type}
       - **Source**: ${detail.source} 
-    
+      - **Type**: ${detail.type}
 `);
         return `- **Path**: ${endpoint.path}
 - **Method**: ${endpoint.method}
