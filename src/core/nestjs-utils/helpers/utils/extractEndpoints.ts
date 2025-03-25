@@ -27,7 +27,7 @@ const extractEndpoints = (content: string) => {
 
                 const newMatch = content.slice(match.index).match(regex);
                 if (newMatch) {
-                    const sourceMatch = (newMatch as any)[0].match(regexForLine);
+                    const sourceMatch = (newMatch as RegExpMatchArray)[0].match(regexForLine);
 
                     if (sourceMatch) {
                         const name = sourceMatch[2];   // Parameter name (e.g., updateProductDto)
